@@ -1,0 +1,131 @@
+import { StyleSheet, Text, TextStyle, TextInput, View, Alert } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import LottieView from 'lottie-react-native'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, StoreType } from '../../redux'
+import { confirmEmail } from '../../redux/slice/AuthSlice'
+
+const Confirm = () => {
+    const state = useSelector((state: StoreType) => state.authSlice);
+    const dispatch = useDispatch<AppDispatch>()
+    const [otp, setOtp] = useState("");
+    const inputRefs = useRef<Array<TextInput | null>>([]);
+    const submitConfirm = async () => {
+        Alert.alert('OTP code entered', state.email);
+        const payload: any = {
+            email: state.email,
+            confirmCode: parseInt(otp)
+        }
+        dispatch(confirmEmail(payload))
+    }
+    console.log("stateemail", state.email);
+
+    const handleTextChange = (text: string, index: number) => {
+
+        if (text.length === 1 && index < inputRefs.current.length - 1) {
+            const nextInput = inputRefs.current[index + 1];
+            nextInput?.focus();
+        }
+        const otpArray = otp.split('');
+        otpArray[index] = text;
+        setOtp(otpArray.join(''));
+
+    };
+
+    useEffect(() => {
+        // animationRef.current?.play()
+        if (otp.length == 4) {
+            submitConfirm()
+        }
+    }, [otp])
+
+
+    return (
+        <SafeAreaView style={{
+            backgroundColor: "#000",
+            flex: 1
+        }}>
+            <View style={{ marginHorizontal: 24 }}>
+                <LottieView
+                    autoPlay
+                    loop
+                    style={{ width: '100%' }}
+                    source={require('../../assets/animation/emailanim.json')}
+                />
+            </View>
+
+            <View style={styles.titles}>
+                <Text style={styles.titles.title}>Confirm Email OTP code</Text>
+                <Text style={styles.titles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
+            </View>
+            <View style={styles.container}>
+                {[0, 1, 2, 3].map((i) => (
+                    <TextInput
+                        key={i}
+                        style={styles.input}
+                        maxLength={1}
+                        keyboardType="numeric"
+                        selectionColor="white"
+                        onChangeText={(text) => handleTextChange(text, i)}
+                        onSubmitEditing={() => {
+                            // If user taps the "Done" button on the last input field, dismiss keyboard
+                            if (i === inputRefs.current.length - 1) {
+                                inputRefs.current[i]?.blur();
+                            }
+                        }}
+                        onKeyPress={({ nativeEvent }: any) => {
+                            // If user taps the "Backspace" button on an empty input field, move focus to the previous one
+                            if (nativeEvent.key === 'Backspace' && nativeEvent.target === null && i > 0) {
+                                const prevInput = inputRefs.current[i - 1];
+                                prevInput?.focus();
+                            }
+                        }}
+                        ref={(ref) => (inputRefs.current[i] = ref)}
+                    />
+                ))}
+            </View>
+
+
+
+        </SafeAreaView>
+    )
+}
+
+export default Confirm
+
+const styles = StyleSheet.create({
+    titles: {
+        alignItems: "center",
+        marginTop: 60,
+        title: {
+            fontWeight: 'bold',
+            fontSize: 18,
+            color: "#fff"
+        } as TextStyle,
+        desc: {
+            textAlign: "center",
+            fontSize: 14,
+            marginHorizontal: 28,
+            marginTop: 20,
+            color: "#797C7B"
+        } as TextStyle,
+
+    },
+    container: {
+        marginTop: 40,
+        flexDirection: 'row',
+        justifyContent: "space-around",
+    },
+    input: {
+        width: 40,
+        height: 40,
+        margin: 10,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: "#24786D",
+        borderRadius: 5,
+        textAlign: 'center',
+        color: "white"
+    },
+})
