@@ -30,7 +30,6 @@ const Login = ({ navigation }: any) => {
         }
 
     }, [state.loading])
-    console.log("stateerr", error);
 
 
     return (
@@ -73,9 +72,7 @@ const Login = ({ navigation }: any) => {
                                     {errors.password && touched.password &&
                                         <Text style={styles.error}>{errors.password}</Text>
                                     }
-                                    {errors.password && touched.password &&
-                                        <Text style={styles.error}>{errors.password}</Text>
-                                    }
+
                                     <TextInput
                                         label="Password"
                                         underlineColor='#24786D'

@@ -31,7 +31,6 @@ const Signup = ({ navigation }: any) => {
         }
 
     }, [state.loading])
-    console.log("stateerr", error);
 
 
     return (

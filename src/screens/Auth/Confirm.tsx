@@ -23,12 +23,15 @@ const Confirm = ({ navigation }: any) => {
         console.log("submit", payload);
 
         dispatch(confirmEmail(payload))
-        // if (!token) {
-        //     await AsyncStorage.setItem("@token", state.token);
-        //     navigation.navigate("Home")
-        // }
-    }
 
+    }
+    useEffect(() => {
+        if (token) {
+
+            AsyncStorage.setItem("@token", state.token);
+            navigation.navigate("AppStack")
+        }
+    }, [token])
     const handleTextChange = (text: string, index: number) => {
 
         if (text.length === 1 && index < inputRefs.current.length - 1) {
@@ -71,7 +74,9 @@ const Confirm = ({ navigation }: any) => {
                             <Text style={styles.title}>Confirm Email OTP code</Text>
                             <Text style={styles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
                         </View>
+                        {error && <Text style={styles.error}>{error}</Text>}
                         <View style={styles.container}>
+
                             {[0, 1, 2, 3].map((i) => (
                                 <TextInput
                                     key={i}

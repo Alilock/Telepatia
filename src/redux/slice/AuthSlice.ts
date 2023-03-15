@@ -63,6 +63,7 @@ const authSlice = createSlice({
             .addCase(registerThunk.fulfilled, (state, action) => {
                 state.loading = 'fullfied',
                     state.email = action.payload.email;
+                state.error = ''
             }).addCase(registerThunk.rejected, (state, action) => {
                 state.loading = 'reject',
                     state.error = action.payload
@@ -71,6 +72,8 @@ const authSlice = createSlice({
                 state.loading = 'fullfied';
                 state.user = action.payload.user;
                 state.token = action.payload.token;
+                state.error = ''
+
             })
             .addCase(confirmEmail.pending, (state) => {
                 state.loading = 'pending';
@@ -86,6 +89,8 @@ const authSlice = createSlice({
             }).addCase(loginThunk.fulfilled, (state, action) => {
                 state.loading = 'fullfied',
                     state.email = action.payload.email
+                state.error = ''
+
             })
     }
 })
