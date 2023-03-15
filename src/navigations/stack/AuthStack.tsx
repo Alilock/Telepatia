@@ -5,6 +5,7 @@ import Signup from '../../screens/Auth/Signup';
 import Onboarding from '../../screens/Auth/Onboarding';
 import BackButton from '../../components/buttons/BackButton';
 import Confirm from '../../screens/Auth/Confirm';
+import Login from '../../screens/Auth/Login';
 
 const Stack = createNativeStackNavigator();
 const AuthStack = () => {
@@ -12,6 +13,7 @@ const AuthStack = () => {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name='Onboarding' component={Onboarding} />
             <Stack.Screen name='SignUp' component={Signup} />
+            <Stack.Screen name='Login' component={Login} />
             <Stack.Screen name='Confirm' component={Confirm} />
         </Stack.Navigator>
     )

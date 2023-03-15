@@ -42,7 +42,7 @@ const Onboarding = ({ navigation }: any) => {
                     </View>
                     <View style={{ flexDirection: "row", marginTop: 46, justifyContent: "center" }}>
                         <Text style={{ color: "white", fontWeight: "200" }}>Existing account?</Text>
-                        <TouchableOpacity><Text style={{ color: "white" }}> Log in</Text></TouchableOpacity>
+                        <TouchableOpacity><Text style={{ color: "white" }} onPress={() => { navigation.navigate('Login') }}> Log in</Text></TouchableOpacity>
                     </View>
                 </View>
             </View>

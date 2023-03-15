@@ -6,8 +6,8 @@ export interface AuthState {
     user: any
     email: string,
     loading: 'reject' | 'pending' | 'fullfied' | null;
-    token: string | null,
-    error: string | undefined
+    token: string,
+    error: any
 
 };
 
@@ -15,7 +15,7 @@ const initialState: AuthState = {
     user: '',
     email: '',
     loading: null,
-    token: null,
+    token: '',
     error: '',
 
 }
@@ -24,13 +24,33 @@ interface ConfirmEmail {
     email: string
 }
 
-export const registerThunk = createAsyncThunk("auth/register", async (payload: SignUp) => {
-    const response = await axiosInstance.post('api/auth/register', payload)
-    return response.data
+export const registerThunk = createAsyncThunk("auth/register", async (payload: SignUp, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post('api/auth/register', payload)
+        return response.data
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
+    }
 })
-export const confirmEmail = createAsyncThunk('auth/confirm', async (payload: any) => {
-    const res = await axiosInstance.post('api/auth/confirmCode', payload);
-    return res.data;
+export const confirmEmail = createAsyncThunk('auth/confirm', async (payload: any, { rejectWithValue }) => {
+    try {
+        const res = await axiosInstance.post('api/auth/confirmCode', payload);
+        return res.data;
+
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
+
+    }
+})
+export const loginThunk = createAsyncThunk('auth/login', async (payload: any, { rejectWithValue }) => {
+
+    try {
+        const res = await axiosInstance.post('api/auth/login', payload);
+        return res.data;
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
+
+    }
 })
 const authSlice = createSlice({
     initialState,
@@ -42,28 +62,31 @@ const authSlice = createSlice({
         })
             .addCase(registerThunk.fulfilled, (state, action) => {
                 state.loading = 'fullfied',
-                    console.log(action.payload.email);
-                state.email = action.payload.email;
+                    state.email = action.payload.email;
             }).addCase(registerThunk.rejected, (state, action) => {
                 state.loading = 'reject',
-                    console.log("mess", action.error);
-                state.error = action.error.message
+                    state.error = action.payload
             })
             .addCase(confirmEmail.fulfilled, (state, action) => {
                 state.loading = 'fullfied';
-
                 state.user = action.payload.user;
                 state.token = action.payload.token;
             })
             .addCase(confirmEmail.pending, (state) => {
                 state.loading = 'pending';
-
             })
             .addCase(confirmEmail.rejected, (state, action) => {
-                console.log("confim email rejected");
                 state.loading = 'reject';
-                state.error = action.error.message;
-            });
+                state.error = action.payload
+            }).addCase(loginThunk.pending, (state) => {
+                state.loading = 'pending'
+            }).addCase(loginThunk.rejected, (state, action) => {
+                state.loading = 'reject';
+                state.error = action.payload
+            }).addCase(loginThunk.fulfilled, (state, action) => {
+                state.loading = 'fullfied',
+                    state.email = action.payload.email
+            })
     }
 })
 

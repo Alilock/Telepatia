@@ -1,25 +1,33 @@
-import { StyleSheet, Text, TextStyle, TextInput, View, Alert } from 'react-native'
+import { StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, StoreType } from '../../redux'
 import { confirmEmail } from '../../redux/slice/AuthSlice'
-
-const Confirm = () => {
+import { ActivityIndicator, Button } from 'react-native-paper'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+const Confirm = ({ navigation }: any) => {
     const state = useSelector((state: StoreType) => state.authSlice);
+    const loading = state.loading
+    const token = state.token;
+    const error = state.error
     const dispatch = useDispatch<AppDispatch>()
     const [otp, setOtp] = useState("");
-    const inputRefs = useRef<Array<TextInput | null>>([]);
+    const inputRefs = useRef<Array<TextInput | null>>([null, null, null, null]);
     const submitConfirm = async () => {
-        Alert.alert('OTP code entered', state.email);
         const payload: any = {
             email: state.email,
             confirmCode: parseInt(otp)
         }
+        console.log("submit", payload);
+
         dispatch(confirmEmail(payload))
+        // if (!token) {
+        //     await AsyncStorage.setItem("@token", state.token);
+        //     navigation.navigate("Home")
+        // }
     }
-    console.log("stateemail", state.email);
 
     const handleTextChange = (text: string, index: number) => {
 
@@ -30,64 +38,69 @@ const Confirm = () => {
         const otpArray = otp.split('');
         otpArray[index] = text;
         setOtp(otpArray.join(''));
-
     };
 
-    useEffect(() => {
-        // animationRef.current?.play()
-        if (otp.length == 4) {
-            submitConfirm()
-        }
-    }, [otp])
-
+    // useEffect(() => {
+    //     // animationRef.current?.play()
+    //     // if (otp.length == 4) {
+    //     //     submitConfirm()
+    //     // }
+    // }, [otp])
 
     return (
         <SafeAreaView style={{
             backgroundColor: "#000",
             flex: 1
         }}>
-            <View style={{ marginHorizontal: 24 }}>
-                <LottieView
-                    autoPlay
-                    loop
-                    style={{ width: '100%' }}
-                    source={require('../../assets/animation/emailanim.json')}
-                />
-            </View>
+            {loading == 'pending' ?
+                <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+                    <ActivityIndicator />
+                </View>
+                : (
+                    <View>
+                        <View style={{ marginHorizontal: 24 }}>
+                            <LottieView
+                                autoPlay
+                                loop
+                                style={{ width: '100%' }}
+                                source={require('../../assets/animation/emailanim.json')}
+                            />
+                        </View>
 
-            <View style={styles.titles}>
-                <Text style={styles.titles.title}>Confirm Email OTP code</Text>
-                <Text style={styles.titles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
-            </View>
-            <View style={styles.container}>
-                {[0, 1, 2, 3].map((i) => (
-                    <TextInput
-                        key={i}
-                        style={styles.input}
-                        maxLength={1}
-                        keyboardType="numeric"
-                        selectionColor="white"
-                        onChangeText={(text) => handleTextChange(text, i)}
-                        onSubmitEditing={() => {
-                            // If user taps the "Done" button on the last input field, dismiss keyboard
-                            if (i === inputRefs.current.length - 1) {
-                                inputRefs.current[i]?.blur();
-                            }
-                        }}
-                        onKeyPress={({ nativeEvent }: any) => {
-                            // If user taps the "Backspace" button on an empty input field, move focus to the previous one
-                            if (nativeEvent.key === 'Backspace' && nativeEvent.target === null && i > 0) {
-                                const prevInput = inputRefs.current[i - 1];
-                                prevInput?.focus();
-                            }
-                        }}
-                        ref={(ref) => (inputRefs.current[i] = ref)}
-                    />
-                ))}
-            </View>
-
-
-
+                        <View style={styles.titles}>
+                            <Text style={styles.title}>Confirm Email OTP code</Text>
+                            <Text style={styles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
+                        </View>
+                        <View style={styles.container}>
+                            {[0, 1, 2, 3].map((i) => (
+                                <TextInput
+                                    key={i}
+                                    style={styles.input}
+                                    maxLength={1}
+                                    keyboardType="numeric"
+                                    selectionColor="white"
+                                    onChangeText={(text) => handleTextChange(text, i)}
+                                    onSubmitEditing={() => {
+                                        // If user taps the "Done" button on the last input field, dismiss keyboard
+                                        if (i === inputRefs.current.length - 1) {
+                                            inputRefs.current[i]?.blur();
+                                        }
+                                    }}
+                                    onKeyPress={({ nativeEvent }: any) => {
+                                        // If user taps the "Backspace" button on an empty input field, move focus to the previous one
+                                        if (nativeEvent.key === 'Backspace' && nativeEvent.target === null && i > 0) {
+                                            const prevInput = inputRefs.current[i - 1];
+                                            prevInput?.focus();
+                                        }
+                                    }}
+                                    ref={(ref) => (inputRefs.current[i] = ref)}
+                                />
+                            ))}
+                        </View>
+                        <Button onPress={submitConfirm}>Submit</Button>
+                    </View>
+                )
+            }
         </SafeAreaView>
     )
 }
@@ -95,22 +108,22 @@ const Confirm = () => {
 export default Confirm
 
 const styles = StyleSheet.create({
+    title: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: "#fff"
+    },
     titles: {
         alignItems: "center",
         marginTop: 60,
-        title: {
-            fontWeight: 'bold',
-            fontSize: 18,
-            color: "#fff"
-        } as TextStyle,
-        desc: {
-            textAlign: "center",
-            fontSize: 14,
-            marginHorizontal: 28,
-            marginTop: 20,
-            color: "#797C7B"
-        } as TextStyle,
 
+    },
+    desc: {
+        textAlign: "center",
+        fontSize: 14,
+        marginHorizontal: 28,
+        marginTop: 20,
+        color: "#797C7B"
     },
     container: {
         marginTop: 40,
@@ -127,5 +140,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         textAlign: 'center',
         color: "white"
-    },
+    }, error: {
+        color: "red"
+    }
 })

@@ -5,15 +5,14 @@ import { TextInput } from 'react-native-paper'
 import Button from '../../components/buttons/Button'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
-import { registerThunk } from '../../redux/slice/AuthSlice'
+import { loginThunk, registerThunk } from '../../redux/slice/AuthSlice'
 import { AppDispatch, StoreType } from '../../redux'
 import { useDispatch, useSelector } from 'react-redux'
 //error messages
-const Signup = ({ navigation }: any) => {
+const Login = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const SignupSchema = Yup.object().shape({
-        username: Yup.string().required('Username is required'),
         email: Yup.string().email('Invalid email').required('Email is required'),
         password: Yup.string().required('Password is required'),
     })
@@ -22,7 +21,7 @@ const Signup = ({ navigation }: any) => {
     const error = state.error
 
     const handleSubmit = (values: any) => {
-        dispatch(registerThunk(values))
+        dispatch(loginThunk(values))
 
     }
     useEffect(() => {
@@ -44,33 +43,19 @@ const Signup = ({ navigation }: any) => {
                     <ActivityIndicator />
                 </View> :
                     <Formik
-                        initialValues={{ username: '', email: '', password: '' }}
+                        initialValues={{ email: '', password: '' }}
                         onSubmit={handleSubmit}
                         validationSchema={SignupSchema}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                             <>
                                 <View style={styles.titles}>
-                                    <Text style={styles.titles.title}>Sign up with Email</Text>
-                                    <Text style={styles.titles.desc}>Get chatting with friends and family today by signing up for our chat app!</Text>
+                                    <Text style={styles.titles.title}>Log in to Telepatia</Text>
+                                    <Text style={styles.titles.desc}>Welcome back! Sign in using your social account or email to continue us</Text>
                                 </View>
                                 <View style={styles.form}>
-
                                     {error && <Text style={styles.error}>{error}</Text>}
-                                    {errors.username && touched.username &&
-                                        <Text style={styles.error}>{errors.username}</Text>
-                                    }
-                                    <TextInput
-                                        label="Username"
-                                        underlineColor='#24786D'
-                                        activeUnderlineColor='#24786D'
-                                        mode="flat"
-                                        textColor='white'
-                                        style={styles.input}
-                                        onChangeText={handleChange('username')}
-                                        onBlur={handleBlur('username')}
-                                        value={values.username}
-                                    />
+
                                     {errors.email && touched.email &&
                                         <Text style={styles.error}>{errors.email}</Text>
                                     }
@@ -85,6 +70,9 @@ const Signup = ({ navigation }: any) => {
                                         onBlur={handleBlur('email')}
                                         value={values.email}
                                     />
+                                    {errors.password && touched.password &&
+                                        <Text style={styles.error}>{errors.password}</Text>
+                                    }
                                     {errors.password && touched.password &&
                                         <Text style={styles.error}>{errors.password}</Text>
                                     }
@@ -103,7 +91,7 @@ const Signup = ({ navigation }: any) => {
 
                                 </View>
                                 <View style={{ marginHorizontal: 24, marginTop: 60 }}>
-                                    <Button title='Create an account' color='#24786D' onPress={handleSubmit} />
+                                    <Button title='Login' color='#24786D' onPress={handleSubmit} />
                                 </View>
                             </>
                         )}
@@ -114,7 +102,7 @@ const Signup = ({ navigation }: any) => {
     )
 }
 
-export default Signup
+export default Login
 
 const styles = StyleSheet.create({
     titles: {
