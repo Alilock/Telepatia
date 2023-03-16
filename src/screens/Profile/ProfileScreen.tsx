@@ -2,35 +2,53 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../../components/buttons/Button'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import PostList from '../../components/Posts/PostList';
+import StoryList from '../../components/Stories/StoryList';
+
+const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
     return (
-        <View>
-            <View style={styles.banner}>
-                <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
-                <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
-                    <Image style={styles.profileimage} source={require('../../assets/images/profilephoto.jpg')} />
-                </LinearGradient>
-            </View>
-            <View style={styles.aboutme}>
-                <Text style={styles.username}>@Alilock</Text>
-                <Text style={styles.located}>Baku 🇦🇿</Text>
-                <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
-            </View>
-            <View style={styles.statistics}>
-                <View style={styles.followings}>
-                    <Text style={styles.count}>2,467</Text>
-                    <Text style={styles.follow}>Followers</Text>
+        <View style={{ flex: 1 }}>
+            <View style={{ flex: 0.6 }}>
+                <View style={styles.banner}>
+                    <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
+                    <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
+                        <Image style={styles.profileimage} source={require('../../assets/images/profilephoto.jpg')} />
+                    </LinearGradient>
                 </View>
-                <View style={styles.followings}>
-                    <Text style={styles.count}>2,467</Text>
-                    <Text style={styles.follow}>Followers</Text>
+                <View style={styles.aboutme}>
+                    <Text style={styles.username}>@Alilock</Text>
+                    <Text style={styles.located}>Baku 🇦🇿</Text>
+                    <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
+                </View>
+                <View style={styles.statistics}>
+                    <View style={styles.followings}>
+                        <Text style={styles.count}>2,467</Text>
+                        <Text style={styles.follow}>Followers</Text>
+                    </View>
+                    <View style={styles.followings}>
+                        <Text style={styles.count}>2,467</Text>
+                        <Text style={styles.follow}>Followers</Text>
+
+                    </View>
+                    <TouchableOpacity style={styles.editButton}>
+                        <Text style={styles.edittext}>Edit Profile</Text>
+                    </TouchableOpacity>
 
                 </View>
-                <TouchableOpacity style={styles.editButton}>
-                    <Text style={styles.edittext}>Edit Profile</Text>
-                </TouchableOpacity>
             </View>
-        </View>
+            <View style={{ flex: 0.5 }}>
+                <Tab.Navigator screenOptions={{
+                    tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", width: 50, height: 4, },
+                    tabBarIndicatorContainerStyle: { alignItems: "center", justifyContent: 'center' }
+
+                }}>
+                    <Tab.Screen name='Posts' component={PostList} />
+                    <Tab.Screen name='Stories' component={StoryList} />
+                </Tab.Navigator>
+            </View>
+        </View >
     )
 }
 
