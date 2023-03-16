@@ -6,8 +6,12 @@ import ProfileScreen from '../../screens/Profile/ProfileScreen';
 import SearchScreen from '../../screens/Search/SearchScreen';
 import ShareScreen from '../../screens/Create/ShareScreen';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
-import { Feed, Plus, Profile, Search } from '../../components/Icons';
+// import { Feed, Plus, Profile, Search } from '../../components/Icons';
 import SvgAlert from '../../components/Icons/Alert';
+import SvgFeed from '../../components/Icons/Feed';
+import SvgSearch from '../../components/Icons/Search';
+import SvgPlus from '../../components/Icons/Plus';
+import SvgProfile from '../../components/Icons/Profile';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,20 +27,20 @@ const AppStack = () => {
             <Tab.Screen name='Home' component={HomeScreen}
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Feed stroke={focused ? '#E0783E' : '#414141'} />
+                        <SvgFeed stroke={focused ? '#E0783E' : '#414141'} />
                     ),
                 }}
             />
             <Tab.Screen name='Search' component={SearchScreen}
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Search stroke={focused ? '#E0783E' : '#414141'} />
+                        <SvgSearch stroke={focused ? '#E0783E' : '#414141'} />
                     ),
                 }} />
             <Tab.Screen name='Share' component={ShareScreen}
                 options={{
                     tabBarIcon: ({ color, focused }) => (
-                        <Plus stroke={focused ? '#E0783E' : '#414141'} />
+                        <SvgPlus stroke={focused ? '#E0783E' : '#414141'} />
                     ),
                 }} />
             <Tab.Screen name='Notification' component={NotificationScreen}
@@ -49,7 +53,7 @@ const AppStack = () => {
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
-                        <Profile stroke={focused ? '#E0783E' : '#414141'} />
+                        <SvgProfile stroke={focused ? '#E0783E' : '#414141'} />
                     ),
                 }} />
         </Tab.Navigator>

@@ -40,9 +40,8 @@ const ProfileScreen = () => {
             </View>
             <View style={{ flex: 0.5 }}>
                 <Tab.Navigator screenOptions={{
-                    tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", width: 50, height: 4, },
-                    tabBarIndicatorContainerStyle: { alignItems: "center", justifyContent: 'center' }
-
+                    tabBarActiveTintColor: "white",
+                    tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", height: 4 },
                 }}>
                     <Tab.Screen name='Posts' component={PostList} />
                     <Tab.Screen name='Stories' component={StoryList} />

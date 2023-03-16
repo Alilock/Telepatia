@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "svgr": "svgr ./src/assets/icons -d ./src/components/Icons --native --icon --svg-props width=24,height=24"
+    "svgr": "svgr ./src/assets/icons/Icon -d ./src/components/Icons --native --icon --svg-props width=24,height=24"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.11",

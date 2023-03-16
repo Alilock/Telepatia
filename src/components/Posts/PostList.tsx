@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, FlatList } from 'react-native'
 import React from 'react'
-
+import { datas } from '../../data/posts'
+import Post from './Post'
 const PostList = () => {
     return (
         <View>
-            <Text>PostList</Text>
-            <Text>PostList</Text>
-            <Text>PostList</Text>
-            <Text>PostList</Text>
+            <FlatList data={datas}
+                renderItem={Post}
+                contentContainerStyle={{  }}
+            />
         </View>
     )
 }
