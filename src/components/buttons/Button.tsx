@@ -5,7 +5,7 @@ interface ButtonProps {
     color: string,
     onPress: any
 }
-const Button = ({ title, color, onPress}: ButtonProps) => {
+const Button = ({ title, color, onPress }: ButtonProps) => {
     return (
         <TouchableOpacity style={[{ ...styles.div }, { backgroundColor: color }]}
             onPress={onPress}

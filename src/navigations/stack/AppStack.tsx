@@ -47,6 +47,7 @@ const AppStack = () => {
                 }} />
             <Tab.Screen name='Profile' component={ProfileScreen}
                 options={{
+                    headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <Profile stroke={focused ? '#E0783E' : '#414141'} />
                     ),
