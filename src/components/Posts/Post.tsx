@@ -6,17 +6,28 @@ import SvgComment from '../Icons/Comment'
 import SvgLike from '../Icons/Like'
 import SvgBookmark from '../Icons/Bookmark'
 import Avatar from '../Avatar'
+import axiosInstance from '../../services/axios.instance'
+import LinearGradient from 'react-native-linear-gradient'
 const Post = ({ item }: any) => {
+    console.log(`http://localhost:8080/uploads/${item.photos[0]}`);
 
     return (
         <View style={styles.container}>
             <View style={styles.posthead}>
                 <View style={styles.author}>
-                    <Avatar source={{
-                        uri: item.image
-                    }} />
+                    <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
+                        {
+                            item && item.author.profilPicture ?
+                                <Avatar
+                                    source={{
+                                        uri: `http://localhost:8080/uploads/${item.author.profilPicture}`
+                                    }}
+                                /> : <Text style={styles.profileimagetext}>{item.author.username[0] + item.author.username[1]}</Text>
+                        }
+
+                    </LinearGradient>
                     <View>
-                        <Text style={styles.authorname}>{item.author_username}</Text>
+                        <Text style={styles.authorname}>{item.author.username}</Text>
                         <Text style={styles.day}>3d ago</Text>
                     </View>
 
@@ -30,22 +41,23 @@ const Post = ({ item }: any) => {
                 }
                 {
 
-                    item.image &&
-                    <Image style={styles.image} source={{
-                        uri: item.image
-                    }} />
+                    item.photos.length > 0 ?
+                        <Image style={styles.image} source={{
+                            uri: `http://localhost:8080/uploads/${item.photos[0]}`
+
+                        }} /> : null
                 }
             </View>
             <View style={styles.actions}>
                 <View style={styles.mainaction}>
                     <View style={styles.action}>
                         <SvgLike />
-                        <Text style={styles.count}>{item.like_count}</Text>
+                        <Text style={styles.count}>{item && item.comments.length}</Text>
                     </View>
                     <View style={styles.action}>
 
                         <SvgComment />
-                        <Text style={styles.count}>{item.comment_count}</Text>
+                        <Text style={styles.count}>{item && item.comments.length}</Text>
                     </View>
                     <View>
                         <SvgShare />
@@ -120,5 +132,17 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "600",
         color: "#fff"
-    }
+    },
+
+    profileimagetext: {
+        color: "#fff"
+    },
+    profile: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        justifyContent: "center",
+        alignItems: 'center'
+
+    },
 })

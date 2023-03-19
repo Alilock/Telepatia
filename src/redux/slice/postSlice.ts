@@ -2,21 +2,20 @@ import { SerializedError, createAsyncThunk, createSlice } from "@reduxjs/toolkit
 import axios from "axios";
 import axiosInstance from "../../services/axios.instance";
 export interface PostState {
-    post: any,
+    posts: any,
     userId: any,
     error: any,
     loading: 'reject' | 'pending' | 'fullfied' | null;
 }
 
 const initialState: PostState = {
-    post: {},
+    posts: [],
     userId: '',
     error: '',
     loading: null
 }
 
 export const postPostThunk = createAsyncThunk("post/post", async (payload: any, { rejectWithValue }) => {
-
     try {
         const response = await axiosInstance.post('api/posts', payload)
         return response.data
@@ -24,6 +23,15 @@ export const postPostThunk = createAsyncThunk("post/post", async (payload: any, 
     } catch (error: any) {
         return rejectWithValue(error.response.data.message)
 
+    }
+})
+
+export const postGetAllUser = createAsyncThunk('post/getAllByUser', async (payload: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`api/posts/getAllByUser?userId=${payload}`)
+        return response.data
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
     }
 })
 
@@ -39,9 +47,21 @@ const postSlice = createSlice({
                 state.loading = 'reject'
                 state.error = action.payload
             }).addCase(postPostThunk.fulfilled, (state, action) => {
-                state.loading = 'fullfied',
-                    state.post = action.payload
+                state.loading = 'fullfied'
             })
+
+        builder.addCase(postGetAllUser.pending, (state) => {
+            state.loading = 'pending'
+
+        }).addCase(postGetAllUser.rejected, (state, action) => {
+            state.loading = 'reject'
+            state.error = action.payload
+
+        }).addCase(postGetAllUser.fulfilled, (state, action) => {
+            state.posts = action.payload
+        })
     }
 
 })
+
+export default postSlice.reducer

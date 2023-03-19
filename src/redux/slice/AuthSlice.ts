@@ -12,7 +12,7 @@ export interface AuthState {
 };
 
 const initialState: AuthState = {
-    user: '',
+    user: {},
     email: '',
     loading: null,
     token: '',

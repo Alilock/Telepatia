@@ -2,9 +2,9 @@ import { StyleSheet, Text, View, FlatList } from 'react-native'
 import React from 'react'
 import { datas } from '../../data/posts'
 import Post from './Post'
-const PostList = () => {
+const PostList = ({ posts }: any) => {
     return (
-        <FlatList data={datas}
+        <FlatList data={posts}
             scrollsToTop
             renderItem={Post}
         />

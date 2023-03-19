@@ -20,17 +20,17 @@ const Confirm = ({ navigation }: any) => {
             email: state.email,
             confirmCode: parseInt(otp)
         }
-        console.log("submit", payload);
 
         dispatch(confirmEmail(payload))
-
     }
+
     useEffect(() => {
         if (token) {
-
+            AsyncStorage.setItem('userInfo', JSON.stringify(state.user))
             AsyncStorage.setItem("@token", state.token);
             navigation.navigate("AppStack")
         }
+
     }, [token])
     const handleTextChange = (text: string, index: number) => {
 

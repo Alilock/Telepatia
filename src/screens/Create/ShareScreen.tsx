@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, TextInput, Button, Animated, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Avatar from '../../components/Avatar'
 import ImagePicker, { launchImageLibrary, Asset, ImagePickerResponse, launchCamera } from 'react-native-image-picker';
@@ -7,26 +7,58 @@ import SvgImage from '../../components/Icons/Image';
 import SvgPlus from '../../components/Icons/Plus';
 import SvgCamera from '../../components/Icons/Camera';
 import SvgClose from '../../components/Icons/Close';
+import UserAuth from '../../features/hooks/UserAuth';
+import { useSelector, useDispatch } from 'react-redux';
+import { StoreType, AppDispatch } from '../../redux';
+import { getUserInfo } from '../../redux/slice/UserSlice';
+import { postPostThunk } from '../../redux/slice/PostSlice';
+const ShareScreen = ({ navigation }: any) => {
+    const dispatch = useDispatch<AppDispatch>();
+    const state = useSelector((state: StoreType) => state.postSlice)
+    const [status, userInfo, loading] = UserAuth()
+    console.log(state);
 
-const ShareScreen = () => {
     const [image, setImage] = useState<any>(null);
-    const [status, setStatus] = useState<string>('')
+    const [content, setStatus] = useState<string>('')
     const [animation] = useState(new Animated.Value(0));
     const [open, isOpen] = useState<boolean>(false)
     const [imageUri, setImageUri] = useState<any>('');
+
+
+
+    const publishPost = () => {
+        const form = new FormData();
+        if (image) {
+            form.append("photos", {
+                name: image.fileName, // Whatever your filename is
+                uri: image.uri, //  file:///data/user/0/com.cookingrn/cache/rn_image_picker_lib_temp_5f6898ee-a8d4-48c9-b265-142efb11ec3f.jpg
+                type: image.type, // video/mp4 for videos..or image/png etc...
+            });
+        }
+
+        form.append("content", content)
+        form.append("userId", userInfo._id)
+
+        dispatch(postPostThunk(form))
+        navigation.navigate("Home")
+    }
+    //#region image
     const takeImage = () => launchCamera({
         mediaType: 'mixed',
         saveToPhotos: true
     }, (res: ImagePickerResponse) => {
-        console.log(res);
 
     })
+
+
     const pickImage = () => {
         launchImageLibrary({
             mediaType: 'photo',
         }, (res: ImagePickerResponse) => {
             if (res.assets && res.assets.length > 0) {
                 const asset: Asset = res.assets[0];
+                console.log("res", res);
+                setImage(asset)
                 setImageUri(asset.uri);
             }
         })
@@ -41,6 +73,7 @@ const ShareScreen = () => {
         }).start();
         isOpen(!open)
     };
+    //#endregion image
     return (
         <SafeAreaView>
             <View style={styles.header}>
@@ -48,7 +81,7 @@ const ShareScreen = () => {
                     <Text style={styles.discard}>Discard</Text>
                 </TouchableOpacity>
                 <Text style={styles.title}>CREATE</Text>
-                <TouchableOpacity style={styles.publishbtn}>
+                <TouchableOpacity style={styles.publishbtn} onPress={publishPost}>
                     <Text style={styles.publishtitle}>Publish</Text>
                 </TouchableOpacity>
             </View>
