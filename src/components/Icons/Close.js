@@ -1,6 +1,6 @@
 import * as React from 'react';
-import Svg, { Path } from 'react-native-svg';
-const SvgPlus = props => (
+import Svg, {Path} from 'react-native-svg';
+const SvgClose = props => (
   <Svg
     width="24"
     height="24"
@@ -9,12 +9,12 @@ const SvgPlus = props => (
     xmlns="http://www.w3.org/2000/svg"
     {...props}>
     <Path
-      d="M8 4v4m0 0v4m0-4h4M8 8H4"
-      // stroke="#ECEBED"
+      d="m4 4 8 8m-8 0 8-8-8 8Z"
+      stroke="#ECEBED"
       strokeWidth={1.4}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
   </Svg>
 );
-export default SvgPlus;
+export default SvgClose;

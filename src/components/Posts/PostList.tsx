@@ -4,12 +4,10 @@ import { datas } from '../../data/posts'
 import Post from './Post'
 const PostList = () => {
     return (
-        <View>
-            <FlatList data={datas}
-                renderItem={Post}
-                contentContainerStyle={{  }}
-            />
-        </View>
+        <FlatList data={datas}
+            scrollsToTop
+            renderItem={Post}
+        />
     )
 }
 

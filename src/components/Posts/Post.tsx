@@ -5,25 +5,37 @@ import SvgShare from '../Icons/Share'
 import SvgComment from '../Icons/Comment'
 import SvgLike from '../Icons/Like'
 import SvgBookmark from '../Icons/Bookmark'
-
+import Avatar from '../Avatar'
 const Post = ({ item }: any) => {
+
     return (
         <View style={styles.container}>
             <View style={styles.posthead}>
                 <View style={styles.author}>
-                    <Image style={styles.avatar} source={{
-                        uri: item.author_image
+                    <Avatar source={{
+                        uri: item.image
                     }} />
                     <View>
                         <Text style={styles.authorname}>{item.author_username}</Text>
                         <Text style={styles.day}>3d ago</Text>
-
                     </View>
 
                 </View>
                 <SvgDotsVertical stroke={'red'} />
             </View>
-            <Text style={styles.content}>{item.content}</Text>
+            <View style={styles.media}>
+                {
+                    item.content &&
+                    <Text style={styles.content}>{item.content}</Text>
+                }
+                {
+
+                    item.image &&
+                    <Image style={styles.image} source={{
+                        uri: item.image
+                    }} />
+                }
+            </View>
             <View style={styles.actions}>
                 <View style={styles.mainaction}>
                     <View style={styles.action}>
@@ -43,19 +55,26 @@ const Post = ({ item }: any) => {
                     <SvgBookmark />
                 </View>
             </View>
-        </View>
+        </View >
     )
 }
 
 export default Post
 
 const styles = StyleSheet.create({
+
     container: {
         paddingBottom: 16,
         paddingHorizontal: 24,
         marginTop: 24,
         borderBottomWidth: 2,
         borderBottomColor: "#323436"
+    },
+    image: {
+        width: '100%',
+        height: 180,
+        resizeMode: "cover",
+        borderRadius: 16,
     },
     posthead: {
         flexDirection: "row", justifyContent: "space-between"
@@ -64,11 +83,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 8
     },
-    avatar: {
-        width: 32,
-        height: 32,
-        borderRadius: 16
-    },
+
     authorname: {
         color: "#ECEBED",
         fontWeight: "700"
@@ -79,11 +94,13 @@ const styles = StyleSheet.create({
         lineHeight: 16,
         color: "#727477"
     },
-
+    media: {
+        marginVertical: 16,
+        gap: 4
+    },
     content: {
         color: "#ECEBED",
         lineHeight: 24,
-        marginVertical: 16
     },
     actions: {
         flexDirection: 'row',

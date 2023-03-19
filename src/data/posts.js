@@ -10,7 +10,7 @@ export const datas = [
     },
     {
         "id": "2",
-        "content": "Just had the most amazing sushi at a new restaurant in town. The fish was so fresh and the presentation was beautiful. I highly recommend it!",
+        "content": "",
         "image": "https://picsum.photos/500/500",
         "like_count": 34,
         "comment_count": 7,

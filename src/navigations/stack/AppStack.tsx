@@ -39,6 +39,7 @@ const AppStack = () => {
                 }} />
             <Tab.Screen name='Share' component={ShareScreen}
                 options={{
+                    headerShown: false,
                     tabBarIcon: ({ color, focused }) => (
                         <SvgPlus stroke={focused ? '#E0783E' : '#414141'} />
                     ),
