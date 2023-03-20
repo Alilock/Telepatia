@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import Button from '../../components/buttons/Button'
@@ -11,73 +11,93 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
 import { postGetAllUser } from '../../redux/slice/PostSlice';
 import { EditSvgrepoCom } from '../../components/Icons';
+import { getUserById } from '../../redux/slice/UserSlice';
+import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
-    const [status, user, loading] = UserAuth()
+    const [status, userId, loading] = UserAuth()
+    const [image, setImage] = useState<any>(null);
+
     const dispatch = useDispatch<AppDispatch>()
     const state = useSelector((state: StoreType) => state.postSlice)
+    const user = useSelector((state: StoreType) => state.userSlice.user)
+    const loadinguser = useSelector((state: StoreType) => state.userSlice.loading)
+    const error = useSelector((state: StoreType) => state.userSlice.error)
     useEffect(() => {
-        if (user) {
-            dispatch(postGetAllUser(user._id))
+        if (userId) {
+            dispatch(getUserById(userId))
+            dispatch(postGetAllUser(userId))
         }
-    }, [user])
+    }, [userId])
 
-    
-    return (
-        <View style={{ flex: 1 }}>
-            <View style={{ flex: 0.6 }}>
-                <View style={styles.banner}>
-                    <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
-                    <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
-                        {
-                            user && user.profilPicture ?
-                                <Image style={styles.profileimage}
-                                    source={{
-                                        uri: `http://localhost:8080/uploads/${user.image}`
-                                    }}
-                                /> : user && <Text style={styles.profileimagetext}>{user.username[0] + user.username[1]}</Text>
-                        }
-                        <TouchableOpacity style={styles.edit}>
-                            <EditSvgrepoCom stroke={'#fff'} />
-
-                        </TouchableOpacity>
-                    </LinearGradient>
-
-                </View>
-                <View style={styles.aboutme}>
-                    <Text style={styles.username}>@{user && user.username}</Text>
-                    <Text style={styles.located}>Baku 🇦🇿</Text>
-                    <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
-                </View>
-                <View style={styles.statistics}>
-                    <View style={styles.followings}>
-                        <Text style={styles.count}>2,467</Text>
-                        <Text style={styles.follow}>Followers</Text>
-                    </View>
-                    <View style={styles.followings}>
-                        <Text style={styles.count}>2,467</Text>
-                        <Text style={styles.follow}>Followers</Text>
-
-                    </View>
-                    <TouchableOpacity style={styles.editButton}>
-                        <Text style={styles.edittext}>Edit Profile</Text>
-                    </TouchableOpacity>
-
-                </View>
-            </View>
-            <View style={{ flex: 0.5 }}>
-                {/* <Tab.Navigator screenOptions={{
-                    tabBarActiveTintColor: "white",
-                    tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", height: 4 },
-                }}>
-                    <Tab.Screen name='Posts' component={PostList} />
-                    <Tab.Screen name='Stories' component={StoryList} />
-                </Tab.Navigator> */}
-                {
-                    state.posts && <PostList posts={state.posts} />
+    const updatePic = () => {
+        launchImageLibrary({
+            mediaType: 'photo'
+        },
+            (res: ImagePickerResponse) => {
+                if (res.assets && res.assets.length > 0) {
+                    const asset: Asset = res.assets[0];
+                    setImage(asset)
                 }
-            </View>
-        </View >
+            }
+        )
+    }
+
+    return (
+        loadinguser == 'pending' ? <ActivityIndicator /> :
+            <View style={{ flex: 1 }}>
+                <View style={{ flex: 0.6 }}>
+                    <View style={styles.banner}>
+                        <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
+                        <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
+                            {
+                                user && user.profilePicture != null ?
+                                    <Image style={styles.profileimage}
+                                        source={{
+                                            uri: `http://localhost:8080/uploads/${user.profilePicture}`
+                                        }}
+                                    /> : <Text style={styles.profileimagetext}>{user.username}</Text>
+                            }
+                            <TouchableOpacity style={styles.edit} onPress={updatePic}>
+                                <EditSvgrepoCom stroke={'#fff'} />
+                            </TouchableOpacity>
+                        </LinearGradient>
+
+                    </View>
+                    <View style={styles.aboutme}>
+                        <Text style={styles.username}>@{user && user.username}</Text>
+                        <Text style={styles.located}>Baku 🇦🇿</Text>
+                        <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
+                    </View>
+                    <View style={styles.statistics}>
+                        <View style={styles.followings}>
+                            <Text style={styles.count}>2,467</Text>
+                            <Text style={styles.follow}>Followers</Text>
+                        </View>
+                        <View style={styles.followings}>
+                            <Text style={styles.count}>2,467</Text>
+                            <Text style={styles.follow}>Followers</Text>
+
+                        </View>
+                        <TouchableOpacity style={styles.editButton}>
+                            <Text style={styles.edittext}>Edit Profile</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+                <View style={{ flex: 0.5 }}>
+                    {/* <Tab.Navigator screenOptions={{
+                tabBarActiveTintColor: "white",
+                tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", height: 4 },
+            }}>
+                <Tab.Screen name='Posts' component={PostList} />
+                <Tab.Screen name='Stories' component={StoryList} />
+            </Tab.Navigator> */}
+                    {
+                        state.posts && <PostList posts={state.posts} />
+                    }
+                </View>
+            </View >
     )
 }
 

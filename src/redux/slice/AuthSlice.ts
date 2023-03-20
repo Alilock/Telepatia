@@ -3,7 +3,7 @@ import SignUp from "../../models/Signup";
 import axios from "axios";
 import axiosInstance from "../../services/axios.instance";
 export interface AuthState {
-    user: any
+    userId: any
     email: string,
     loading: 'reject' | 'pending' | 'fullfied' | null;
     token: string,
@@ -12,7 +12,7 @@ export interface AuthState {
 };
 
 const initialState: AuthState = {
-    user: {},
+    userId: '',
     email: '',
     loading: null,
     token: '',
@@ -70,7 +70,7 @@ const authSlice = createSlice({
             })
             .addCase(confirmEmail.fulfilled, (state, action) => {
                 state.loading = 'fullfied';
-                state.user = action.payload.user;
+                state.userId = action.payload.userId;
                 state.token = action.payload.token;
                 state.error = ''
 

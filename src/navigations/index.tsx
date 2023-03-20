@@ -7,7 +7,7 @@ import UserAuth from '../features/hooks/UserAuth'
 import { ActivityIndicator } from 'react-native-paper'
 const Stack = createNativeStackNavigator()
 const index = () => {
-    const [status, user, loading] = UserAuth()
+    const [status, userId, loading] = UserAuth()
 
     return (
 

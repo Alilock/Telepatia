@@ -1,34 +1,52 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import produce from 'immer';
+import axiosInstance from "../../services/axios.instance";
 
 interface UserState {
-    userInfo: any,
+    user: any,
+    error: any,
+    loading: 'reject' | 'pending' | 'fullfied' | null;
+
 }
 const initialState: UserState = {
-    userInfo: {}
-}
+    user: {},
+    error: '',
+    loading: null
 
+}
+const updatePicThunk = createAsyncThunk("update/users", async (payload: any) => {
+})
+
+export const getUserById = createAsyncThunk('get/users', async (payload: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`api/users/getUserById/${payload}`)
+        return response.data
+    } catch (error: any) {
+
+        return rejectWithValue(error.response.data.message)
+    }
+})
 const userSlice = createSlice({
     initialState,
     name: 'users',
     reducers: {
-        getUserInfo(state) {
-            AsyncStorage.getItem('userInfo').then((data: any) => {
-                const user = JSON.parse(data)
-                if (user) {
-                    return produce(state, draftState => {
-                        draftState.userInfo = user;
-                    });
-                }
-                return state;
-            }).catch(error => {
-                console.log('getUserInfo error:', error);
-                return state;
-            });
-        }
+
+    },
+    extraReducers: builder => {
+        builder.addCase(getUserById.pending, (state) => {
+            state.loading = 'pending'
+        })
+            .addCase(getUserById.rejected, (state, action) => {
+                state.loading = 'reject',
+                    state.error = action.payload
+            })
+            .addCase(getUserById.fulfilled, (state, action) => {
+                state.user = action.payload,
+                    state.loading = 'fullfied'
+            })
     }
+
 })
 
-export const { getUserInfo } = userSlice.actions
 export default userSlice.reducer;

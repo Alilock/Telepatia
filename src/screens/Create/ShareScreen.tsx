@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, Button, Animated, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, Button, Animated, Image, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Avatar from '../../components/Avatar'
@@ -10,13 +10,11 @@ import SvgClose from '../../components/Icons/Close';
 import UserAuth from '../../features/hooks/UserAuth';
 import { useSelector, useDispatch } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
-import { getUserInfo } from '../../redux/slice/UserSlice';
 import { postPostThunk } from '../../redux/slice/PostSlice';
 const ShareScreen = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
     const state = useSelector((state: StoreType) => state.postSlice)
-    const [status, userInfo, loading] = UserAuth()
-    console.log(state);
+    const [status, userId, loading] = UserAuth()
 
     const [image, setImage] = useState<any>(null);
     const [content, setStatus] = useState<string>('')
@@ -37,9 +35,10 @@ const ShareScreen = ({ navigation }: any) => {
         }
 
         form.append("content", content)
-        form.append("userId", userInfo._id)
+        form.append("userId", userId)
 
         dispatch(postPostThunk(form))
+
         navigation.navigate("Home")
     }
     //#region image
@@ -57,7 +56,6 @@ const ShareScreen = ({ navigation }: any) => {
         }, (res: ImagePickerResponse) => {
             if (res.assets && res.assets.length > 0) {
                 const asset: Asset = res.assets[0];
-                console.log("res", res);
                 setImage(asset)
                 setImageUri(asset.uri);
             }
@@ -76,44 +74,52 @@ const ShareScreen = ({ navigation }: any) => {
     //#endregion image
     return (
         <SafeAreaView>
-            <View style={styles.header}>
-                <TouchableOpacity>
-                    <Text style={styles.discard}>Discard</Text>
-                </TouchableOpacity>
-                <Text style={styles.title}>CREATE</Text>
-                <TouchableOpacity style={styles.publishbtn} onPress={publishPost}>
-                    <Text style={styles.publishtitle}>Publish</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.form} >
-                <Avatar source={require('../../assets/images/profilephoto.jpg')} />
-                <TextInput multiline={true} numberOfLines={4}
-                    placeholder="What's on your mind?"
-                    placeholderTextColor={'#727477'}
-                    onChangeText={setStatus}
-                    style={{ color: "white", fontSize: 16 }}
-                />
-            </View>
-            <View style={styles.mediastyle}>
-                <TouchableOpacity onPress={startAnimation} style={styles.openmedia}>
-                    {
-                        !open ?
-                            <SvgPlus width={16} height={16} stroke={'#fff'} /> : <SvgClose width={16} height={16} stroke={'#fff'} />
-                    }
-                </TouchableOpacity>
-                <Animated.View style={[{ display: open ? "flex" : 'none', opacity: animation, flexDirection: "row", }, ...[styles.media]]}>
-                    <TouchableOpacity onPress={pickImage}>
-                        <SvgImage width={20} height={20} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={takeImage}>
-                        <SvgCamera width={20} height={20} />
-                    </TouchableOpacity>
-                </Animated.View>
-            </View>
-            <View style={styles.imagewrap}>
-                {imageUri && <Image source={{ uri: imageUri }} style={styles.pickedimage} />}
+            {
+                state.loading == 'pending' ? <ActivityIndicator /> :
+                    <View>
 
-            </View>
+                        <View style={styles.header}>
+                            <TouchableOpacity>
+                                <Text style={styles.discard}>Discard</Text>
+                            </TouchableOpacity>
+                            <Text style={styles.title}>CREATE</Text>
+                            <TouchableOpacity style={styles.publishbtn} onPress={publishPost}>
+                                <Text style={styles.publishtitle}>Publish</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.form} >
+                            <Avatar source={require('../../assets/images/profilephoto.jpg')} />
+                            <TextInput multiline={true} numberOfLines={4}
+                                placeholder="What's on your mind?"
+                                placeholderTextColor={'#727477'}
+                                onChangeText={setStatus}
+                                style={{ color: "white", fontSize: 16 }}
+                            />
+                        </View>
+                        <View style={styles.mediastyle}>
+                            <TouchableOpacity onPress={startAnimation} style={styles.openmedia}>
+                                {
+                                    !open ?
+                                        <SvgPlus width={16} height={16} stroke={'#fff'} /> : <SvgClose width={16} height={16} stroke={'#fff'} />
+                                }
+                            </TouchableOpacity>
+                            <Animated.View style={[{ display: open ? "flex" : 'none', opacity: animation, flexDirection: "row", }, ...[styles.media]]}>
+                                <TouchableOpacity onPress={pickImage}>
+                                    <SvgImage width={20} height={20} />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={takeImage}>
+                                    <SvgCamera width={20} height={20} />
+                                </TouchableOpacity>
+                            </Animated.View>
+                        </View>
+                        <View style={styles.imagewrap}>
+                            {imageUri && <Image source={{ uri: imageUri }} style={styles.pickedimage} />}
+
+                        </View>
+                    </View>
+
+            }
+
         </SafeAreaView >
     )
 }

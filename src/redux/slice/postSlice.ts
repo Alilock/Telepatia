@@ -18,7 +18,7 @@ const initialState: PostState = {
 export const postPostThunk = createAsyncThunk("post/post", async (payload: any, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post('api/posts', payload)
-        return response.data
+        return response.data.data
 
     } catch (error: any) {
         return rejectWithValue(error.response.data.message)
@@ -48,6 +48,9 @@ const postSlice = createSlice({
                 state.error = action.payload
             }).addCase(postPostThunk.fulfilled, (state, action) => {
                 state.loading = 'fullfied'
+                console.log('return', action.payload);
+
+                state.posts.push(action.payload)
             })
 
         builder.addCase(postGetAllUser.pending, (state) => {
@@ -58,6 +61,7 @@ const postSlice = createSlice({
             state.error = action.payload
 
         }).addCase(postGetAllUser.fulfilled, (state, action) => {
+            state.loading = 'fullfied'
             state.posts = action.payload
         })
     }

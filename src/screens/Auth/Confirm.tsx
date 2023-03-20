@@ -24,9 +24,10 @@ const Confirm = ({ navigation }: any) => {
         dispatch(confirmEmail(payload))
     }
 
+
     useEffect(() => {
         if (token) {
-            AsyncStorage.setItem('userInfo', JSON.stringify(state.user))
+            AsyncStorage.setItem('userId', state.userId)
             AsyncStorage.setItem("@token", state.token);
             navigation.navigate("AppStack")
         }

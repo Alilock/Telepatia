@@ -3,16 +3,18 @@ import React, { useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserAuth = () => {
-    const [user, setUser] = useState<any>(null)
+    const [userId, setUser] = useState<any>(null)
     const [status, setStatus] = useState(false);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-        AsyncStorage.getItem('userInfo').then((data: any) => {
-            const user = JSON.parse(data)
-            if (user) {
-                setUser(user)
+        AsyncStorage.getItem('userId').then((data: any) => {
+
+            if (data) {
+                setUser(data)
             }
         })
+
+
         AsyncStorage.getItem("@token").then(data => {
             const token = JSON.stringify(data)
             if (token != 'null') {
@@ -28,7 +30,7 @@ const UserAuth = () => {
 
     }, [])
 
-    return [status, user, loading];
+    return [status, userId, loading];
 
 }
 

@@ -9,7 +9,7 @@ import Avatar from '../Avatar'
 import axiosInstance from '../../services/axios.instance'
 import LinearGradient from 'react-native-linear-gradient'
 const Post = ({ item }: any) => {
-    console.log(`http://localhost:8080/uploads/${item.photos[0]}`);
+    console.log('item', item);
 
     return (
         <View style={styles.container}>
@@ -17,10 +17,10 @@ const Post = ({ item }: any) => {
                 <View style={styles.author}>
                     <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
                         {
-                            item && item.author.profilPicture ?
+                            item && item.author.profilePicture ?
                                 <Avatar
                                     source={{
-                                        uri: `http://localhost:8080/uploads/${item.author.profilPicture}`
+                                        uri: `http://localhost:8080/uploads/${item.author.profilePicture}`
                                     }}
                                 /> : <Text style={styles.profileimagetext}>{item.author.username[0] + item.author.username[1]}</Text>
                         }
