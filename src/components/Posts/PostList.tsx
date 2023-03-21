@@ -3,10 +3,12 @@ import React from 'react'
 import { datas } from '../../data/posts'
 import Post from './Post'
 const PostList = ({ posts }: any) => {
+
     return (
         <FlatList data={posts}
             scrollsToTop
-            renderItem={Post}
+            keyExtractor={item => item._id}
+            renderItem={({ item, index }) => <Post item={item} index={index} />}
         />
     )
 }

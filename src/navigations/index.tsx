@@ -5,8 +5,17 @@ import AuthStack from './stack/AuthStack'
 import AppStack from './stack/AppStack'
 import UserAuth from '../features/hooks/UserAuth'
 import { ActivityIndicator } from 'react-native-paper'
-const Stack = createNativeStackNavigator()
+import CommentScreen from '../screens/Comment/CommentScreen'
+
+
+export type RootStackParams = {
+    Comment: any;
+    AuthStack: any;
+    AppStack: any;
+};
+const Stack = createNativeStackNavigator<RootStackParams>()
 const index = () => {
+
     const [status, userId, loading] = UserAuth()
 
     return (
@@ -16,7 +25,9 @@ const index = () => {
             } >
                 <ActivityIndicator />
             </View > :
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator screenOptions={{
+                headerShown: false
+            }}>
                 {
 
                     !status ? <>
@@ -24,7 +35,15 @@ const index = () => {
                         <Stack.Screen name='AppStack' component={AppStack} />
                     </>
                         :
-                        <Stack.Screen name='AppStack' component={AppStack} />
+                        <>
+                            <Stack.Screen name='AppStack' component={AppStack} />
+                            <Stack.Screen name='Comment' component={CommentScreen} options={{
+                                headerShown: true,
+                                headerTintColor: "#ECEBED",
+                                headerStyle: { backgroundColor: "#1c1c1c" },
+                            }} />
+                        </>
+
                 }
             </Stack.Navigator>
 

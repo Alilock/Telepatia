@@ -3,15 +3,19 @@ import axios from "axios";
 import axiosInstance from "../../services/axios.instance";
 export interface PostState {
     posts: any,
+    post: any
     userId: any,
     error: any,
     loading: 'reject' | 'pending' | 'fullfied' | null;
+    loadingpost: 'reject' | 'pending' | 'fullfied' | null;
 }
 
 const initialState: PostState = {
     posts: [],
     userId: '',
+    post: '',
     error: '',
+    loadingpost: null,
     loading: null
 }
 
@@ -35,6 +39,24 @@ export const postGetAllUser = createAsyncThunk('post/getAllByUser', async (paylo
     }
 })
 
+export const getPostById = createAsyncThunk('post/getPostById', async (id: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`api/posts/getById?postId=${id}`)
+        return response.data
+    } catch (error) {
+        rejectWithValue(error)
+    }
+})
+
+export const likePost = createAsyncThunk('post/likePost', async (payload: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post('api/posts/likePost', payload)
+        return response.data
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
+    }
+})
+
 const postSlice = createSlice({
     initialState,
     name: 'Posts',
@@ -42,16 +64,14 @@ const postSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(postPostThunk.pending, (state) => {
             state.loading = 'pending'
-        })
-            .addCase(postPostThunk.rejected, (state, action) => {
-                state.loading = 'reject'
-                state.error = action.payload
-            }).addCase(postPostThunk.fulfilled, (state, action) => {
-                state.loading = 'fullfied'
-                console.log('return', action.payload);
+        }).addCase(postPostThunk.rejected, (state, action) => {
+            state.loading = 'reject'
+            state.error = action.payload
+        }).addCase(postPostThunk.fulfilled, (state, action) => {
+            state.loading = 'fullfied'
 
-                state.posts.push(action.payload)
-            })
+            state.posts.unshift(action.payload)
+        })
 
         builder.addCase(postGetAllUser.pending, (state) => {
             state.loading = 'pending'
@@ -64,6 +84,36 @@ const postSlice = createSlice({
             state.loading = 'fullfied'
             state.posts = action.payload
         })
+
+        builder.addCase(likePost.pending, (state) => {
+            state.loading = 'pending'
+        }).addCase(likePost.rejected, (state, action) => {
+            state.loading = 'reject',
+                state.error = action.payload
+        })
+            .addCase(likePost.fulfilled, (state, action) => {
+                state.loading = 'fullfied';
+                const likedPost = action.payload.data;
+                const likedPostIndex = state.posts.findIndex((post: any) => post._id === likedPost._id);
+                if (likedPostIndex >= 0) {
+                    state.posts[likedPostIndex].likes = likedPost.likes;
+                }
+                if (state.post._id == action.payload.data._id) {
+                    state.post.likes = action.payload.data.likes
+                }
+            })
+        builder.addCase(getPostById.pending, (state, action) => {
+            state.loadingpost = 'pending'
+
+        }).addCase(getPostById.rejected, (state, action) => {
+            state.loadingpost = 'reject',
+                state.error = action.payload
+        }).addCase(getPostById.fulfilled, (state, action) => {
+            state.post = action.payload
+            state.loadingpost = 'fullfied'
+        })
+
+
     }
 
 })

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Share } from 'react-native'
+import { StyleSheet, Text, View, Image, Share, TouchableOpacity } from 'react-native'
 import React from 'react'
 import SvgDotsVertical from '../Icons/DotsVertical'
 import SvgShare from '../Icons/Share'
@@ -8,8 +8,32 @@ import SvgBookmark from '../Icons/Bookmark'
 import Avatar from '../Avatar'
 import axiosInstance from '../../services/axios.instance'
 import LinearGradient from 'react-native-linear-gradient'
+import { useSelector, useDispatch } from 'react-redux';
+import { StoreType, AppDispatch } from '../../redux';
+import { likePost } from '../../redux/slice/PostSlice'
+import { useNavigation } from '@react-navigation/native'
+import moment from 'moment'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { RootStackParams } from '../../navigations'
 const Post = ({ item }: any) => {
-    console.log('item', item);
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
+    const goToComment = () => {
+        navigation.navigate("Comment", item._id)
+    }
+
+    const timeSinceCreated = moment(item.createdAt).fromNow();
+    const dispatch = useDispatch<AppDispatch>()
+    const state = useSelector((state: StoreType) => state.postSlice)
+    const userId = useSelector((state: StoreType) => state.userSlice.user._id)
+
+    const likeIt = () => {
+
+        const payload = {
+            userId: userId,
+            postId: item._id
+        }
+        dispatch(likePost(payload))
+    }
 
     return (
         <View style={styles.container}>
@@ -28,11 +52,11 @@ const Post = ({ item }: any) => {
                     </LinearGradient>
                     <View>
                         <Text style={styles.authorname}>{item.author.username}</Text>
-                        <Text style={styles.day}>3d ago</Text>
+                        <Text style={styles.day}>{timeSinceCreated}</Text>
                     </View>
 
                 </View>
-                <SvgDotsVertical stroke={'red'} />
+                <SvgDotsVertical />
             </View>
             <View style={styles.media}>
                 {
@@ -51,12 +75,18 @@ const Post = ({ item }: any) => {
             <View style={styles.actions}>
                 <View style={styles.mainaction}>
                     <View style={styles.action}>
-                        <SvgLike />
-                        <Text style={styles.count}>{item && item.comments.length}</Text>
+                        <TouchableOpacity onPress={likeIt}>
+                            {
+                                item && item.likes.includes(userId) ? <SvgLike stroke={"#2E8AF6"} /> : <SvgLike stroke={"white"} />
+                            }
+                        </TouchableOpacity>
+                        <Text style={styles.count}>{item && item.likes.length}</Text>
                     </View>
                     <View style={styles.action}>
+                        <TouchableOpacity onPress={goToComment}>
+                            <SvgComment />
 
-                        <SvgComment />
+                        </TouchableOpacity>
                         <Text style={styles.count}>{item && item.comments.length}</Text>
                     </View>
                     <View>

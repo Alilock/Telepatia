@@ -1,16 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const HomeScreen = () => {
-
+const Comment = ({ item }: any) => {
     return (
         <View>
-            <Text>HomeScreen</Text>
+            <Text>{item.content}</Text>
         </View>
     )
 }
 
-export default HomeScreen
+export default Comment
 
 const styles = StyleSheet.create({})
