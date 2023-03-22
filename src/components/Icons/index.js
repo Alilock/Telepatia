@@ -1,1 +1,1 @@
-export {default as EditSvgrepoCom} from './EditSvgrepoCom';
+export {default as Send} from './Send';

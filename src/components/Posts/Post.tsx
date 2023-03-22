@@ -43,9 +43,7 @@ const Post = ({ item }: any) => {
                         {
                             item && item.author.profilePicture ?
                                 <Avatar
-                                    source={{
-                                        uri: `http://localhost:8080/uploads/${item.author.profilePicture}`
-                                    }}
+                                    source={item.author.profilePicture}
                                 /> : <Text style={styles.profileimagetext}>{item.author.username[0] + item.author.username[1]}</Text>
                         }
 

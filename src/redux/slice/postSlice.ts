@@ -8,6 +8,7 @@ export interface PostState {
     error: any,
     loading: 'reject' | 'pending' | 'fullfied' | null;
     loadingpost: 'reject' | 'pending' | 'fullfied' | null;
+    loadingcomment: 'reject' | 'pending' | 'fullfied' | null;
 }
 
 const initialState: PostState = {
@@ -16,7 +17,8 @@ const initialState: PostState = {
     post: '',
     error: '',
     loadingpost: null,
-    loading: null
+    loading: null,
+    loadingcomment: null
 }
 
 export const postPostThunk = createAsyncThunk("post/post", async (payload: any, { rejectWithValue }) => {
@@ -51,6 +53,15 @@ export const getPostById = createAsyncThunk('post/getPostById', async (id: any, 
 export const likePost = createAsyncThunk('post/likePost', async (payload: any, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post('api/posts/likePost', payload)
+        return response.data
+    } catch (error: any) {
+        return rejectWithValue(error.response.data.message)
+    }
+})
+
+export const postComment = createAsyncThunk('post/postComment', async (payload: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.post('api/posts/postComment', payload)
         return response.data
     } catch (error: any) {
         return rejectWithValue(error.response.data.message)
@@ -113,6 +124,17 @@ const postSlice = createSlice({
             state.loadingpost = 'fullfied'
         })
 
+        builder.addCase(postComment.pending, (state) => {
+            state.loadingcomment = 'pending'
+        }).addCase(postComment.rejected, (state, action) => {
+            state.loadingcomment = 'reject',
+                state.error = action.payload
+        }).addCase(postComment.fulfilled, (state, action) => {
+
+            state.loadingcomment = 'fullfied'
+            console.log('ful', action.payload);
+            state.post = action.payload
+        })
 
     }
 

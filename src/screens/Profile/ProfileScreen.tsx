@@ -10,9 +10,9 @@ import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
 import { postGetAllUser } from '../../redux/slice/PostSlice';
-import { EditSvgrepoCom } from '../../components/Icons';
 import { getUserById } from '../../redux/slice/UserSlice';
 import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
 const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
     const [status, userId, loading] = UserAuth()
@@ -59,7 +59,7 @@ const ProfileScreen = () => {
                                     /> : <Text style={styles.profileimagetext}>{user.username}</Text>
                             }
                             <TouchableOpacity style={styles.edit} onPress={updatePic}>
-                                <EditSvgrepoCom stroke={'#fff'} />
+                                <SvgEditSvgrepoCom stroke={'#fff'} />
                             </TouchableOpacity>
                         </LinearGradient>
 
