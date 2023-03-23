@@ -132,10 +132,11 @@ const postSlice = createSlice({
         }).addCase(postComment.fulfilled, (state, action) => {
 
             state.loadingcomment = 'fullfied'
-            console.log('ful', action.payload);
             state.post = action.payload
+            // const commentedPost = action.payload.data;
+            // const commentPostIndex = state.posts.findIndex((post: any) => post._id === state.post._id);
+            // commentPostIndex.comments.push(state.post)
         })
-
     }
 
 })

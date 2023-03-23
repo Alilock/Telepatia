@@ -15,7 +15,7 @@ const ShareScreen = ({ navigation }: any) => {
     const dispatch = useDispatch<AppDispatch>();
     const state = useSelector((state: StoreType) => state.postSlice)
     const [status, userId, loading] = UserAuth()
-
+    const user = useSelector((state: StoreType) => state.userSlice.user)
     const [image, setImage] = useState<any>(null);
     const [content, setStatus] = useState<string>('')
     const [animation] = useState(new Animated.Value(0));
@@ -88,7 +88,7 @@ const ShareScreen = ({ navigation }: any) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.form} >
-                            <Avatar source={require('../../assets/images/profilephoto.jpg')} />
+                            <Avatar source={user.profilePicture} name={user.username} />
                             <TextInput multiline={true} numberOfLines={4}
                                 placeholder="What's on your mind?"
                                 placeholderTextColor={'#727477'}

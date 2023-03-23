@@ -28,7 +28,6 @@ const CommentScreen = (props: any) => {
 
         dispatch(postComment(payload))
     }
-    console.log(state.loadingcomment);
 
     return (
         state.loadingpost == 'pending' ?
@@ -37,23 +36,20 @@ const CommentScreen = (props: any) => {
             state.post &&
             <View style={{ flex: 1, justifyContent: "space-between" }}>
 
-                <View>
+                <View style={{ flex: 0.95, }}>
                     <Post item={state.post} />
-                    <View>
-                        <View style={styles.header}>
-                            <Text style={styles.comments}>
-                                COMMENTS ({state.post && state.post.comments.length})
-                            </Text>
-                        </View>
-                        <FlatList
-                            data={state.post.comments}
-                            contentContainerStyle={{ rowGap: 20, marginTop: 32 }}
-                            renderItem={({ item, index }) => <Comment item={item} index={index} />}
-                        />
-
+                    <View style={styles.header}>
+                        <Text style={styles.comments}>
+                            COMMENTS ({state.post && state.post.comments.length})
+                        </Text>
                     </View>
-                </View>
+                    <FlatList
+                        data={state.post.comments}
+                        contentContainerStyle={{ rowGap: 20, marginTop: 32, paddingBottom: 35 }}
+                        renderItem={({ item, index }) => <Comment item={item} index={index} />}
+                    />
 
+                </View>
                 <View style={styles.inputwrap}>
                     <TextInput style={styles.input}
                         placeholder='Type your comment here'
@@ -61,10 +57,10 @@ const CommentScreen = (props: any) => {
                         placeholderTextColor={"#ECEBED"}
                     />
                     <TouchableOpacity onPress={commentPost}>
-
                         <Send />
                     </TouchableOpacity>
                 </View>
+
             </View>
 
     )
@@ -84,8 +80,6 @@ const styles = StyleSheet.create({
     },
     inputwrap: {
         bottom: 24,
-        position: "absolute",
-        width: "100%",
         marginHorizontal: 24,
         flexDirection: "row",
         backgroundColor: "#323436",
@@ -98,6 +92,5 @@ const styles = StyleSheet.create({
     },
     input: {
         color: "#ECEBED"
-
     }
 })

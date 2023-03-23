@@ -1,28 +1,24 @@
 import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
-import Button from '../../components/buttons/Button'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import PostList from '../../components/Posts/PostList';
-import StoryList from '../../components/Stories/StoryList';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
 import { postGetAllUser } from '../../redux/slice/PostSlice';
-import { getUserById } from '../../redux/slice/UserSlice';
-import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
+import { getUserById, updatePicThunk } from '../../redux/slice/UserSlice';
 import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
+import ImagePickerModal from '../../components/ImagePickerModal';
 const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
     const [status, userId, loading] = UserAuth()
-    const [image, setImage] = useState<any>(null);
 
     const dispatch = useDispatch<AppDispatch>()
     const state = useSelector((state: StoreType) => state.postSlice)
     const user = useSelector((state: StoreType) => state.userSlice.user)
     const loadinguser = useSelector((state: StoreType) => state.userSlice.loading)
-    const error = useSelector((state: StoreType) => state.userSlice.error)
     useEffect(() => {
         if (userId) {
             dispatch(getUserById(userId))
@@ -30,19 +26,32 @@ const ProfileScreen = () => {
         }
     }, [userId])
 
-    const updatePic = () => {
-        launchImageLibrary({
-            mediaType: 'photo'
-        },
-            (res: ImagePickerResponse) => {
-                if (res.assets && res.assets.length > 0) {
-                    const asset: Asset = res.assets[0];
-                    setImage(asset)
-                }
-            }
-        )
-    }
+    const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+    const pickImage = () => {
+        setIsModalVisible(true);
+    };
+    const handleImageSelect = (image: any) => {
+        updatePic(image);
+        setIsModalVisible(false);
+    };
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+    };
+    const updatePic = (image: any) => {
 
+        const form = new FormData();
+        if (image) {
+            form.append("profilePic", {
+                name: image.fileName, // Whatever your filename is
+                uri: image.uri, //  file:///data/user/0/com.cookingrn/cache/rn_image_picker_lib_temp_5f6898ee-a8d4-48c9-b265-142efb11ec3f.jpg
+                type: image.type, // video/mp4 for videos..or image/png etc...
+            });
+        }
+
+        form.append("userId", userId)
+
+        dispatch(updatePicThunk(form))
+    }
     return (
         loadinguser == 'pending' ? <ActivityIndicator /> :
             <View style={{ flex: 1 }}>
@@ -58,9 +67,13 @@ const ProfileScreen = () => {
                                         }}
                                     /> : <Text style={styles.profileimagetext}>{user.username}</Text>
                             }
-                            <TouchableOpacity style={styles.edit} onPress={updatePic}>
+                            {/* <TouchableOpacity style={styles.edit} onPress={pickimage}>
+                                <SvgEditSvgrepoCom stroke={'#fff'} />
+                            </TouchableOpacity> */}
+                            <TouchableOpacity style={styles.edit} onPress={pickImage}>
                                 <SvgEditSvgrepoCom stroke={'#fff'} />
                             </TouchableOpacity>
+                            <ImagePickerModal visible={isModalVisible} onSelect={handleImageSelect} onClose={handleModalClose} />
                         </LinearGradient>
 
                     </View>
@@ -86,13 +99,6 @@ const ProfileScreen = () => {
                     </View>
                 </View>
                 <View style={{ flex: 0.5 }}>
-                    {/* <Tab.Navigator screenOptions={{
-                tabBarActiveTintColor: "white",
-                tabBarIndicatorStyle: { backgroundColor: "#2E8AF6", height: 4 },
-            }}>
-                <Tab.Screen name='Posts' component={PostList} />
-                <Tab.Screen name='Stories' component={StoryList} />
-            </Tab.Navigator> */}
                     {
                         state.posts && <PostList posts={state.posts} />
                     }
