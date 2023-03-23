@@ -2,6 +2,7 @@ import { SerializedError, createAsyncThunk, createSlice } from "@reduxjs/toolkit
 import axios from "axios";
 import axiosInstance from "../../services/axios.instance";
 export interface PostState {
+    friendsPosts: any,
     posts: any,
     post: any
     userId: any,
@@ -12,6 +13,7 @@ export interface PostState {
 }
 
 const initialState: PostState = {
+    friendsPosts: [],
     posts: [],
     userId: '',
     post: '',
@@ -29,6 +31,15 @@ export const postPostThunk = createAsyncThunk("post/post", async (payload: any, 
     } catch (error: any) {
         return rejectWithValue(error.response.data.message)
 
+    }
+})
+
+export const getAllFriendsPosts = createAsyncThunk('post/getAllFriendsPost', async () => {
+    try {
+        const response = await axiosInstance.get('api/posts/getAll')
+        return response.data.data
+    } catch (error: any) {
+        // rejectWithValue(error.response.data.message)
     }
 })
 
@@ -52,6 +63,7 @@ export const getPostById = createAsyncThunk('post/getPostById', async (id: any, 
 
 export const likePost = createAsyncThunk('post/likePost', async (payload: any, { rejectWithValue }) => {
     try {
+
         const response = await axiosInstance.post('api/posts/likePost', payload)
         return response.data
     } catch (error: any) {
@@ -82,6 +94,7 @@ const postSlice = createSlice({
             state.loading = 'fullfied'
 
             state.posts.unshift(action.payload)
+            state.friendsPosts.unshift(action.payload)
         })
 
         builder.addCase(postGetAllUser.pending, (state) => {
@@ -112,6 +125,14 @@ const postSlice = createSlice({
                 if (state.post._id == action.payload.data._id) {
                     state.post.likes = action.payload.data.likes
                 }
+
+                const likedPostIndex2 = state.friendsPosts.findIndex((post: any) => post._id === likedPost._id);
+                if (likedPostIndex2 >= 0) {
+                    state.friendsPosts[likedPostIndex2].likes = likedPost.likes;
+                }
+                if (state.friendsPosts._id == action.payload.data._id) {
+                    state.friendsPosts.likes = action.payload.data.likes
+                }
             })
         builder.addCase(getPostById.pending, (state, action) => {
             state.loadingpost = 'pending'
@@ -133,9 +154,19 @@ const postSlice = createSlice({
 
             state.loadingcomment = 'fullfied'
             state.post = action.payload
-            // const commentedPost = action.payload.data;
-            // const commentPostIndex = state.posts.findIndex((post: any) => post._id === state.post._id);
-            // commentPostIndex.comments.push(state.post)
+            const commentedPost = action.payload;
+            const commentPostIndex = state.friendsPosts.findIndex((post: any) => post._id === commentedPost._id);
+            state.friendsPosts[commentPostIndex].comments.push(state.post)
+        })
+
+        builder.addCase(getAllFriendsPosts.pending, (state) => {
+            state.loading = 'pending'
+        }).addCase(getAllFriendsPosts.rejected, (state, action) => {
+            state.loading = 'reject',
+                state.error = action.payload
+        }).addCase(getAllFriendsPosts.fulfilled, (state, action) => {
+            state.loading = 'fullfied',
+                state.friendsPosts = action.payload
         })
     }
 

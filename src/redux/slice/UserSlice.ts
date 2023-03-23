@@ -6,12 +6,14 @@ import { err } from "react-native-svg/lib/typescript/xml";
 
 interface UserState {
     user: any,
+    foreignUser: any,
     error: any,
     loading: 'reject' | 'pending' | 'fullfied' | null;
 
 }
 const initialState: UserState = {
     user: {},
+    foreignUser: {},
     error: '',
     loading: null
 
@@ -36,6 +38,17 @@ export const getUserById = createAsyncThunk('get/users', async (payload: any, { 
         return rejectWithValue(error.response.data.message)
     }
 })
+
+export const getForeignUser = createAsyncThunk('get/foreignUser', async (payload: any, { rejectWithValue }) => {
+    try {
+
+        const response = await axiosInstance.get(`api/users/getForeignUser/${payload}`)
+        return response.data
+    } catch (error: any) {
+
+        return rejectWithValue(error.response.data.message)
+    }
+})
 const userSlice = createSlice({
     initialState,
     name: 'users',
@@ -43,6 +56,18 @@ const userSlice = createSlice({
 
     },
     extraReducers: builder => {
+        builder.addCase(getForeignUser.pending, (state) => {
+            state.loading = 'pending'
+        })
+            .addCase(getForeignUser.rejected, (state, action) => {
+                state.loading = 'reject',
+                    state.error = action.payload
+            })
+            .addCase(getForeignUser.fulfilled, (state, action) => {
+                state.foreignUser = action.payload,
+                    state.loading = 'fullfied'
+            })
+
         builder.addCase(getUserById.pending, (state) => {
             state.loading = 'pending'
         })
@@ -64,7 +89,6 @@ const userSlice = createSlice({
             })
             .addCase(updatePicThunk.fulfilled, (state, action) => {
                 state.loading = 'fullfied'
-                console.log(action.payload.user);
                 state.user.profilePicture = action.payload.user.profilePicture
                 state.user._ud = action.payload.user._id
             })

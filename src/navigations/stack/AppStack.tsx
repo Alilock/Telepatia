@@ -19,6 +19,7 @@ const AppStack = () => {
 
     return (
         <Tab.Navigator screenOptions={{
+            headerShown: false,
             tabBarStyle: {
                 backgroundColor: "#000",
                 paddingTop: 16

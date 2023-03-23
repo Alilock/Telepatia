@@ -5,59 +5,44 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
-import { getAllFriendsPosts, postGetAllUser } from '../../redux/slice/PostSlice';
-import { getUserById, updatePicThunk } from '../../redux/slice/UserSlice';
+import { postGetAllUser } from '../../redux/slice/PostSlice';
+import { getUserById, getForeignUser, updatePicThunk } from '../../redux/slice/UserSlice';
 import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
 import ImagePickerModal from '../../components/ImagePickerModal';
 import Post from '../../components/Posts/Post';
+import SvgBack from '../../components/Icons/Back';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParams } from '../../navigations';
 const Tab = createMaterialTopTabNavigator();
-const ProfileScreen = () => {
+const ForeignProfileScreen = (props: any) => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
+
+    const id = props.route.params
+
     const [status, userId, loading] = UserAuth()
+
     const dispatch = useDispatch<AppDispatch>()
-    const state = useSelector((state: StoreType) => state.postSlice)
-    const user = useSelector((state: StoreType) => state.userSlice.user)
+    const postSlice = useSelector((state: StoreType) => state.postSlice)
+    const user = useSelector((state: StoreType) => state.userSlice.foreignUser)
     const loadinguser = useSelector((state: StoreType) => state.userSlice.loading)
+
     const handleRefresh = () => {
-        dispatch(getUserById(userId))
-        dispatch(getAllFriendsPosts())
+        dispatch(getForeignUser(id))
+        dispatch(postGetAllUser(id))
     }
 
     useEffect(() => {
-        if (userId) {
-            dispatch(getUserById(userId))
-            dispatch(getAllFriendsPosts())
+        if (id) {
+            dispatch(getForeignUser(id))
+            dispatch(postGetAllUser(id))
         }
-
     }, [userId])
-    console.log(user);
 
-
-    const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
-    const pickImage = () => {
-        setIsModalVisible(true);
-    };
-    const handleImageSelect = (image: any) => {
-        updatePic(image);
-        setIsModalVisible(false);
-    };
-    const handleModalClose = () => {
-        setIsModalVisible(false);
-    };
-    const updatePic = (image: any) => {
-
-        const form = new FormData();
-        if (image) {
-            form.append("profilePic", {
-                name: image.fileName, // Whatever your filename is
-                uri: image.uri, //  file:///data/user/0/com.cookingrn/cache/rn_image_picker_lib_temp_5f6898ee-a8d4-48c9-b265-142efb11ec3f.jpg
-                type: image.type, // video/mp4 for videos..or image/png etc...
-            });
-        }
-
-        form.append("userId", userId)
-
-        dispatch(updatePicThunk(form))
+    const goBack = () => {
+        navigation.goBack()
     }
+
     return (
         loadinguser == 'pending' ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator />
@@ -65,16 +50,18 @@ const ProfileScreen = () => {
             <View>
 
                 {
-                    state.friendsPosts && <FlatList
+                    user.posts && <FlatList
                         onRefresh={handleRefresh}
                         refreshing={false}
-                        data={state.friendsPosts.filter((e: any) => e.author._id === userId)}
+                        data={postSlice.posts}
                         keyExtractor={item => item._id}
                         renderItem={({ item, index }) => <Post item={item} index={index} />}
                         ListHeaderComponent={() => (
                             <View style={{ flex: 0.6 }}>
+
                                 <View style={styles.banner}>
                                     <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
+
                                     <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
                                         {
                                             user && user.profilePicture ?
@@ -84,16 +71,13 @@ const ProfileScreen = () => {
                                                     }}
                                                 /> : <Text style={styles.profileimagetext}>{user.username && user.username[0] + user.username[1]}</Text>
                                         }
-                                        {/* <TouchableOpacity style={styles.edit} onPress={pickimage}>
-                                    <SvgEditSvgrepoCom stroke={'#fff'} />
-                                </TouchableOpacity> */}
-                                        <TouchableOpacity style={styles.edit} onPress={pickImage}>
-                                            <SvgEditSvgrepoCom stroke={'#fff'} />
-                                        </TouchableOpacity>
-                                        <ImagePickerModal visible={isModalVisible} onSelect={handleImageSelect} onClose={handleModalClose} />
+
                                     </LinearGradient>
 
                                 </View>
+                                <TouchableOpacity style={styles.backButton} onPress={goBack}>
+                                    <SvgBack stroke={"white"} width={35} />
+                                </TouchableOpacity>
                                 <View style={styles.aboutme}>
                                     <Text style={styles.username}>@{user && user.username}</Text>
                                     <Text style={styles.located}>Baku 🇦🇿</Text>
@@ -110,7 +94,7 @@ const ProfileScreen = () => {
 
                                     </View>
                                     <TouchableOpacity style={styles.editButton}>
-                                        <Text style={styles.edittext}>Edit Profile</Text>
+                                        <Text style={styles.edittext}>Follow</Text>
                                     </TouchableOpacity>
 
                                 </View>
@@ -123,9 +107,23 @@ const ProfileScreen = () => {
     )
 }
 
-export default ProfileScreen
+export default ForeignProfileScreen
 
 const styles = StyleSheet.create({
+    backButton: {
+        position: "absolute",
+        zIndex: 9,
+        top: 60,
+        left: 24,
+        width: 32,
+        height: 32,
+        backgroundColor: "#000",
+        alignItems: "center",
+        borderRadius: 16,
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: "#323436"
+    },
     banner: {
         height: 160,
         alignItems: "center"
@@ -199,7 +197,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         paddingVertical: 6,
         borderRadius: 30,
-        borderColor: '#727477',
+        backgroundColor: "#F62E8E",
+        borderColor: '#F62E8E',
         borderWidth: 1
     },
     edittext: {

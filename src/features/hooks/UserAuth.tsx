@@ -14,7 +14,6 @@ const UserAuth = () => {
             }
         })
 
-
         AsyncStorage.getItem("@token").then(data => {
             const token = JSON.stringify(data)
             if (token != 'null') {

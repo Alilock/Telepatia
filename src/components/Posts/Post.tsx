@@ -15,16 +15,23 @@ import { useNavigation } from '@react-navigation/native'
 import moment from 'moment'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParams } from '../../navigations'
+import UserAuth from '../../features/hooks/UserAuth'
 const Post = ({ item }: any) => {
+    const [status, userId, loading] = UserAuth()
+
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
     const goToComment = () => {
         navigation.navigate("Comment", item._id)
     }
-
+    const goToUser = () => {
+        if (userId != item.author._id) {
+            navigation.navigate('ForeignProfile', item.author._id)
+        }
+    }
     const timeSinceCreated = moment(item.createdAt).fromNow();
     const dispatch = useDispatch<AppDispatch>()
     const state = useSelector((state: StoreType) => state.postSlice)
-    const userId = useSelector((state: StoreType) => state.userSlice.user._id)
+    const user = useSelector((state: StoreType) => state.userSlice.user)
 
     const likeIt = () => {
 
@@ -35,16 +42,21 @@ const Post = ({ item }: any) => {
         dispatch(likePost(payload))
     }
 
+
     return (
         <View style={styles.container}>
             <View style={styles.posthead}>
-                <View style={styles.author}>
+                <TouchableOpacity style={styles.author} onPress={goToUser} >
                     <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
                         {
-                            item && item.author.profilePicture ?
+                            item &&
+                                item.author.profilePicture ?
                                 <Avatar
                                     source={item.author.profilePicture}
-                                /> : <Text style={styles.profileimagetext}>{item.author.username[0] + item.author.username[1]}</Text>
+                                /> :
+                                <Text style={styles.profileimagetext}>
+                                    {item.author.username[0] + item.author.username[1]}
+                                </Text>
                         }
 
                     </LinearGradient>
@@ -53,7 +65,7 @@ const Post = ({ item }: any) => {
                         <Text style={styles.day}>{timeSinceCreated}</Text>
                     </View>
 
-                </View>
+                </TouchableOpacity>
                 <SvgDotsVertical />
             </View>
             <View style={styles.media}>
@@ -75,7 +87,8 @@ const Post = ({ item }: any) => {
                     <View style={styles.action}>
                         <TouchableOpacity onPress={likeIt}>
                             {
-                                item && item.likes.includes(userId) ? <SvgLike stroke={"#2E8AF6"} /> : <SvgLike stroke={"white"} />
+                                item && item.likes.includes(userId) ? <SvgLike stroke={"#2E8AF6"} />
+                                    : <SvgLike stroke={"white"} />
                             }
                         </TouchableOpacity>
                         <Text style={styles.count}>{item && item.likes.length}</Text>

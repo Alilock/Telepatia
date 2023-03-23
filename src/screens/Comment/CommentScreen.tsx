@@ -9,11 +9,13 @@ import { ActivityIndicator } from 'react-native-paper';
 import Avatar from '../../components/Avatar';
 import Comment from '../../components/Posts/Comment';
 import { Send } from '../../components/Icons';
+import UserAuth from '../../features/hooks/UserAuth';
 const CommentScreen = (props: any) => {
+    const [status, userId, loading] = UserAuth()
+
     const id = props.route.params
     const dispatch = useDispatch<AppDispatch>()
     const state = useSelector((state: StoreType) => state.postSlice)
-    const userId = useSelector((state: StoreType) => state.userSlice.user._id)
     const [content, setContent] = useState('')
     useEffect(() => {
         dispatch(getPostById(id))
