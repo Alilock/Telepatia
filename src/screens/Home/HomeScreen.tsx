@@ -7,7 +7,7 @@ import { StoreType, AppDispatch } from '../../redux'
 import { getAllFriendsPosts } from '../../redux/slice/PostSlice'
 import Post from '../../components/Posts/Post'
 const HomeScreen = () => {
-    
+
     const dispatch = useDispatch<AppDispatch>()
     const loading = useSelector((state: StoreType) => state.postSlice.loading)
     const friendsPosts = useSelector((state: StoreType) => state.postSlice.friendsPosts)

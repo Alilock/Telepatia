@@ -29,8 +29,6 @@ const ProfileScreen = () => {
         }
 
     }, [userId])
-    console.log(user);
-
 
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
     const pickImage = () => {
@@ -101,12 +99,12 @@ const ProfileScreen = () => {
                                 </View>
                                 <View style={styles.statistics}>
                                     <View style={styles.followings}>
-                                        <Text style={styles.count}>2,467</Text>
+                                        <Text style={styles.count}>{user && user.followers && user.followers.length}</Text>
                                         <Text style={styles.follow}>Followers</Text>
                                     </View>
                                     <View style={styles.followings}>
-                                        <Text style={styles.count}>2,467</Text>
-                                        <Text style={styles.follow}>Followers</Text>
+                                        <Text style={styles.count}>{user && user.followers && user.following.length}</Text>
+                                        <Text style={styles.follow}>Following</Text>
 
                                     </View>
                                     <TouchableOpacity style={styles.editButton}>

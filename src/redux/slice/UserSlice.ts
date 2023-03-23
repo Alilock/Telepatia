@@ -41,12 +41,20 @@ export const getUserById = createAsyncThunk('get/users', async (payload: any, { 
 
 export const getForeignUser = createAsyncThunk('get/foreignUser', async (payload: any, { rejectWithValue }) => {
     try {
-
         const response = await axiosInstance.get(`api/users/getForeignUser/${payload}`)
         return response.data
     } catch (error: any) {
 
         return rejectWithValue(error.response.data.message)
+    }
+})
+
+export const followUser = createAsyncThunk('put/follow', async (payload: any, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.put('api/users/followUser', payload)
+        return response.data
+    } catch (error: any) {
+        rejectWithValue(error)
     }
 })
 const userSlice = createSlice({
@@ -92,6 +100,12 @@ const userSlice = createSlice({
                 state.user.profilePicture = action.payload.user.profilePicture
                 state.user._ud = action.payload.user._id
             })
+
+        builder.addCase(followUser.fulfilled, (state, action) => {
+
+            state.foreignUser.followers = action.payload.foreignUser.followers
+            state.user.following = action.payload.user.following
+        })
     }
 })
 

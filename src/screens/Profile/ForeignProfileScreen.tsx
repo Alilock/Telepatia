@@ -6,7 +6,7 @@ import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
 import { postGetAllUser } from '../../redux/slice/PostSlice';
-import { getUserById, getForeignUser, updatePicThunk } from '../../redux/slice/UserSlice';
+import { getUserById, getForeignUser, updatePicThunk, followUser } from '../../redux/slice/UserSlice';
 import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
 import ImagePickerModal from '../../components/ImagePickerModal';
 import Post from '../../components/Posts/Post';
@@ -14,7 +14,6 @@ import SvgBack from '../../components/Icons/Back';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParams } from '../../navigations';
-const Tab = createMaterialTopTabNavigator();
 const ForeignProfileScreen = (props: any) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
@@ -30,6 +29,14 @@ const ForeignProfileScreen = (props: any) => {
     const handleRefresh = () => {
         dispatch(getForeignUser(id))
         dispatch(postGetAllUser(id))
+    }
+
+    const followHim = () => {
+        const payload = {
+            userId: userId,
+            foreignId: user._id
+        }
+        dispatch(followUser(payload))
     }
 
     useEffect(() => {
@@ -85,15 +92,15 @@ const ForeignProfileScreen = (props: any) => {
                                 </View>
                                 <View style={styles.statistics}>
                                     <View style={styles.followings}>
-                                        <Text style={styles.count}>2,467</Text>
+                                        <Text style={styles.count}>{user && user.followers.length}</Text>
                                         <Text style={styles.follow}>Followers</Text>
                                     </View>
                                     <View style={styles.followings}>
-                                        <Text style={styles.count}>2,467</Text>
-                                        <Text style={styles.follow}>Followers</Text>
+                                        <Text style={styles.count}>{user && user.following.length}</Text>
+                                        <Text style={styles.follow}>Following</Text>
 
                                     </View>
-                                    <TouchableOpacity style={styles.editButton}>
+                                    <TouchableOpacity style={styles.editButton} onPress={followHim}>
                                         <Text style={styles.edittext}>Follow</Text>
                                     </TouchableOpacity>
 
