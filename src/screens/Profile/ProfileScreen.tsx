@@ -78,7 +78,8 @@ const ProfileScreen = () => {
                                             user && user.profilePicture ?
                                                 <Image style={styles.profileimage}
                                                     source={{
-                                                        uri: `http://localhost:8080/uploads/${user.profilePicture}`
+                                                        uri: user.profilePicture
+
                                                     }}
                                                 /> : <Text style={styles.profileimagetext}>{user.username && user.username[0] + user.username[1]}</Text>
                                         }

@@ -77,7 +77,7 @@ const Post = ({ item }: any) => {
 
                     item.photos.length > 0 ?
                         <Image style={styles.image} source={{
-                            uri: `http://localhost:8080/uploads/${item.photos[0]}`
+                            uri: item.photos[0]
 
                         }} /> : null
                 }

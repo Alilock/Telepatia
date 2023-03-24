@@ -18,7 +18,7 @@ const Avatar = ({ source, width = 32, height = 32, raduis = 16, name }: any) => 
             {
                 source ? <Image
                     source={{
-                        uri: `http://localhost:8080/uploads/${source}`
+                        uri: source
                     }}
                     style={{ width: width, height: height, borderRadius: raduis }} /> :
                     <View style={styles.avatar}>

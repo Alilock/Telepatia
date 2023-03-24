@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import LottieView from 'lottie-react-native'
@@ -52,7 +52,7 @@ const Confirm = ({ navigation }: any) => {
     // }, [otp])
 
     return (
-        <SafeAreaView style={{
+        <KeyboardAvoidingView style={{
             backgroundColor: "#000",
             flex: 1
         }}>
@@ -70,12 +70,6 @@ const Confirm = ({ navigation }: any) => {
                                 source={require('../../assets/animation/emailanim.json')}
                             />
                         </View>
-
-                        <View style={styles.titles}>
-                            <Text style={styles.title}>Confirm Email OTP code</Text>
-                            <Text style={styles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
-                        </View>
-                        {error && <Text style={styles.error}>{error}</Text>}
                         <View style={styles.container}>
 
                             {[0, 1, 2, 3].map((i) => (
@@ -102,12 +96,20 @@ const Confirm = ({ navigation }: any) => {
                                     ref={(ref) => (inputRefs.current[i] = ref)}
                                 />
                             ))}
+
                         </View>
                         <Button onPress={submitConfirm}>Submit</Button>
+
+                        <View style={styles.titles}>
+                            <Text style={styles.title}>Confirm Email OTP code</Text>
+                            <Text style={styles.desc}>Enter the code we sent to your email to start chatting with friends and family on our app!</Text>
+                        </View>
+                        {error && <Text style={styles.error}>{error}</Text>}
+
                     </View>
                 )
             }
-        </SafeAreaView>
+        </KeyboardAvoidingView>
     )
 }
 
