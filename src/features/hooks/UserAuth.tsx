@@ -7,6 +7,7 @@ const UserAuth = () => {
     const [status, setStatus] = useState(false);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
+
         AsyncStorage.getItem('userId').then((data: any) => {
 
             if (data) {

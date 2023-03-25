@@ -100,9 +100,14 @@ const ForeignProfileScreen = (props: any) => {
                                         <Text style={styles.follow}>Following</Text>
 
                                     </View>
-                                    <TouchableOpacity style={styles.editButton} onPress={followHim}>
-                                        <Text style={styles.edittext}>Follow</Text>
-                                    </TouchableOpacity>
+                                    {
+                                        user && user.followers.includes(userId) ? <TouchableOpacity style={[{ backgroundColor: "white" }, ...[styles.editButton]]} onPress={followHim}>
+                                            <Text style={[{ color: "#000" }, ...[styles.edittext]]}>UnFollow</Text>
+                                        </TouchableOpacity> : <TouchableOpacity style={[{ backgroundColor: "#F62E8E" }, ...[styles.editButton]]} onPress={followHim}>
+                                            <Text style={[{ color: "#fff" }, ...[styles.edittext]]}>Follow</Text>
+                                        </TouchableOpacity>
+                                    }
+
 
                                 </View>
                             </View>
@@ -204,12 +209,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 32,
         paddingVertical: 6,
         borderRadius: 30,
-        backgroundColor: "#F62E8E",
         borderColor: '#F62E8E',
         borderWidth: 1
     },
     edittext: {
-        color: "#fff",
         fontWeight: "700",
         textAlign: "center",
         lineHeight: 24

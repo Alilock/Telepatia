@@ -1,8 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import produce from 'immer';
 import axiosInstance from "../../services/axios.instance";
-import { err } from "react-native-svg/lib/typescript/xml";
 
 interface UserState {
     user: any,
@@ -102,6 +100,10 @@ const userSlice = createSlice({
             })
 
         builder.addCase(followUser.fulfilled, (state, action) => {
+
+            console.log("foreign", action.payload.foreignUser);
+            console.log("user", action.payload.user);
+
 
             state.foreignUser.followers = action.payload.foreignUser.followers
             state.user.following = action.payload.user.following
