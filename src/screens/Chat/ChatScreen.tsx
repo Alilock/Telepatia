@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { GiftedChat, IMessage, User } from 'react-native-gifted-chat';
+import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { Bubble, GiftedChat, IMessage, User } from 'react-native-gifted-chat';
 import io from 'socket.io-client';
 import UserAuth from '../../features/hooks/UserAuth';
 import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, StoreType } from '../../redux';
+import { Avatar, Text } from 'react-native-paper';
+import { getForeignUser } from '../../redux/slice/UserSlice';
 
 interface ChatScreenProps {
     route: {
@@ -22,61 +26,75 @@ interface ChatMessage {
     user: User;
 }
 
-const socket = io('http://localhost:8080');
+const socket = io('https://telepatiaapi.onrender.com');
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
-    const [status, userId, loading] = UserAuth()
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const user = useSelector((state: StoreType) => state.userSlice.foreignUser);
+    const [status, userId, loading] = UserAuth();
     const [receiverId, setReceiverId] = useState<string>('');
     const [messages, setMessages] = useState<IMessage[]>([]);
 
     useEffect(() => {
-        setReceiverId(route.params.receiverId);
-
-        socket.on('connect', () => {
-            console.log('Connected to server');
-        });
-
-        socket.on('message', (chat: any) => {
-            const newMessage = chat.messages[chat.messages.length - 1];
-            const message: IMessage = {
-                _id: newMessage._id,
-                text: newMessage.content,
-                createdAt: newMessage.createdAt,
-                user: {
-                    _id: newMessage.sender._id,
-                    name: newMessage.sender.username,
-                },
-            };
-            setMessages(previousMessages => GiftedChat.append(previousMessages, [message]));
-        });
-
-        socket.emit('join', userId);
-
-        axios.get(`http://localhost:8080/api/chat/6411780de8b30ccf9df2aa7b/641c22c06b56837f6392fe4a`)
-            .then(response => {
-                const chat = response.data;
-                console.log(chat);
-
-                const formattedMessages: IMessage[] = chat.messages.map((message: any) => ({
-                    _id: message._id,
-                    text: message.content,
-                    createdAt: message.createdAt,
-                    user: {
-                        _id: message.sender._id,
-                        name: message.sender.username,
-                    },
-                }));
-
-                setMessages(formattedMessages.reverse());
-            })
-            .catch(error => {
-                console.log("error", error);
+        if (userId) {
+            setReceiverId(route.params.receiverId);
+            dispatch(getForeignUser(receiverId));
+            socket.on('connect', () => {
+                console.log('Connected to server');
             });
-        return () => {
-            socket.emit('leave', route.params.userId);
-            socket.disconnect();
-        };
-    }, []);
+
+            socket.on('message', (chat: any) => {
+                const newMessage = chat.messages[chat.messages.length - 1];
+                const message: IMessage = {
+                    _id: newMessage._id,
+                    text: newMessage.content,
+                    createdAt: newMessage.createdAt,
+                    user: {
+                        _id: newMessage.sender._id,
+                        name: newMessage.sender.username,
+                    },
+                };
+                setMessages(previousMessages =>
+                    GiftedChat.append(previousMessages, [message])
+                );
+            });
+
+            socket.emit('join', userId);
+
+            setIsLoading(true);
+            console.log(userId + receiverId);
+
+            axios
+                .get(`https://telepatiaapi.onrender.com/api/chat/${userId}/${receiverId}`)
+                .then(response => {
+                    const chat = response.data;
+
+                    const formattedMessages: IMessage[] = chat.messages.map((message: any) => ({
+                        _id: message._id,
+                        text: message.content,
+                        createdAt: message.createdAt,
+                        user: {
+                            _id: message.sender._id,
+                            name: message.sender.username,
+                            avatar: message.sender.profilePicture,
+                        },
+                    }));
+
+                    setMessages(formattedMessages.reverse());
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.log('error', error);
+                })
+
+
+            return () => {
+                socket.emit('leave', route.params.userId);
+                socket.disconnect();
+            };
+        }
+    }, [userId, receiverId]);
 
     const handleSend = (newMessages: IMessage[]) => {
         const message = newMessages[0];
@@ -93,13 +111,32 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         socket.emit('message', { senderId: userId, receiverId, content: message.text });
     };
 
+    const renderAvatar = (props: any) => {
+        const { user } = props.currentMessage;
+        return <Avatar.Image size={40} source={{ uri: user.avatar }} />;
+    };
+    console.log('loading', isLoading);
+
     return (
         <SafeAreaView style={styles.container}>
-            <GiftedChat
-                messages={messages}
-                onSend={handleSend}
-                user={{ _id: userId }}
-            />
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#999999" />
+                </View>
+            ) : (
+                <>
+                    <TouchableOpacity style={styles.footer}>
+                        <Avatar.Image size={40} source={{ uri: user.profilePicture }} />
+                        <Text style={styles.username}>{user.username}</Text>
+                    </TouchableOpacity>
+                    <GiftedChat
+                        messages={messages}
+                        onSend={handleSend}
+                        user={{ _id: userId }}
+                        renderAvatar={renderAvatar}
+                    />
+                </>
+            )}
         </SafeAreaView>
     );
 };
@@ -108,6 +145,20 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+    footer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+    },
+    username: {
+        marginLeft: 10, fontSize: 18,
+        fontWeight: 'bold',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

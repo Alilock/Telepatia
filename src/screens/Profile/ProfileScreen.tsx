@@ -21,7 +21,6 @@ const ProfileScreen = () => {
         dispatch(getUserById(userId))
         dispatch(getAllFriendsPosts())
     }
-    console.log(userId);
 
     useEffect(() => {
         if (userId) {
