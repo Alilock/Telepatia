@@ -1,14 +1,11 @@
 import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
 import { postGetAllUser } from '../../redux/slice/PostSlice';
 import { getUserById, getForeignUser, updatePicThunk, followUser } from '../../redux/slice/UserSlice';
-import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
-import ImagePickerModal from '../../components/ImagePickerModal';
 import Post from '../../components/Posts/Post';
 import SvgBack from '../../components/Icons/Back';
 import { useNavigation } from '@react-navigation/native';
@@ -50,7 +47,9 @@ const ForeignProfileScreen = (props: any) => {
     const goBack = () => {
         navigation.goBack()
     }
-
+    const gotoChat = () => {
+        navigation.navigate("ChatScreen", { receiverId: user._id })
+    }
     return (
         loadinguser == 'pending' ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <ActivityIndicator />
@@ -89,7 +88,7 @@ const ForeignProfileScreen = (props: any) => {
                                 <View style={styles.aboutme}>
                                     <View style={styles.usermessage}>
                                         <Text style={styles.username}>@{user && user.username}</Text>
-                                        <TouchableOpacity style={styles.messagebtn}>
+                                        <TouchableOpacity style={styles.messagebtn} onPress={gotoChat}>
                                             <SvgMessage width={20} height={20} />
                                         </TouchableOpacity>
                                     </View>

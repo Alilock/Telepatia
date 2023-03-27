@@ -7,13 +7,15 @@ import UserAuth from '../features/hooks/UserAuth'
 import { ActivityIndicator } from 'react-native-paper'
 import CommentScreen from '../screens/Comment/CommentScreen'
 import ForeignProfileScreen from '../screens/Profile/ForeignProfileScreen'
+import ChatScreen from '../screens/Chat/ChatScreen'
 
 
 export type RootStackParams = {
     Comment: any;
     AuthStack: any;
     AppStack: any;
-    ForeignProfile: any
+    ForeignProfile: any;
+    ChatScreen: any
 };
 const Stack = createNativeStackNavigator<RootStackParams>()
 const index = () => {
@@ -51,6 +53,7 @@ const index = () => {
                                 headerStyle: { backgroundColor: "#1c1c1c" },
                             }} />
                             <Stack.Screen name='ForeignProfile' component={ForeignProfileScreen} />
+                            <Stack.Screen name='ChatScreen' component={ChatScreen} />
                         </>
 
                 }
