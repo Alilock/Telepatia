@@ -35,6 +35,12 @@ const index = () => {
                     !status ? <>
                         <Stack.Screen name='AuthStack' component={AuthStack} />
                         <Stack.Screen name='AppStack' component={AppStack} />
+                        <Stack.Screen name='Comment' component={CommentScreen} options={{
+                            headerShown: true,
+                            headerTintColor: "#ECEBED",
+                            headerStyle: { backgroundColor: "#1c1c1c" },
+                        }} />
+                        <Stack.Screen name='ForeignProfile' component={ForeignProfileScreen} />
                     </>
                         :
                         <>

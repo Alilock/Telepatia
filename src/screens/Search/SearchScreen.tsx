@@ -31,12 +31,14 @@ const SearchScreen = () => {
                     <SvgSearch stroke={'#fff'} />
                 </TouchableOpacity>
             </View>
-            <FlatList
-                data={results.filter((e: any) => e._id != userId)}
-                // keyExtractor={({ item }: any) => item._id}
+            {
+                results && <FlatList
+                    data={results.filter((e: any) => e._id != userId)}
+                    // keyExtractor={({ item }: any) => item}
 
-                renderItem={({ item, index }) => <SearchedUser item={item} index={index} />}
-            />
+                    renderItem={({ item, index }) => <SearchedUser item={item} index={index} />}
+                />
+            }
         </SafeAreaView>
     )
 }

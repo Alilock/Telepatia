@@ -21,6 +21,7 @@ const ProfileScreen = () => {
         dispatch(getUserById(userId))
         dispatch(getAllFriendsPosts())
     }
+    console.log(userId);
 
     useEffect(() => {
         if (userId) {
@@ -96,7 +97,7 @@ const ProfileScreen = () => {
                                 <View style={styles.aboutme}>
                                     <Text style={styles.username}>@{user && user.username}</Text>
                                     <Text style={styles.located}>Baku 🇦🇿</Text>
-                                    <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
+                                    <Text style={styles.bio}>{user && user.bio} </Text>
                                 </View>
                                 <View style={styles.statistics}>
                                     <View style={styles.followings}>

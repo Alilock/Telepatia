@@ -8,8 +8,8 @@ import { getPostById, postComment } from '../../redux/slice/PostSlice';
 import { ActivityIndicator } from 'react-native-paper';
 import Avatar from '../../components/Avatar';
 import Comment from '../../components/Posts/Comment';
-import { Send } from '../../components/Icons';
 import UserAuth from '../../features/hooks/UserAuth';
+import SvgSend from '../../components/Icons/Send';
 const CommentScreen = (props: any) => {
     const [status, userId, loading] = UserAuth()
 
@@ -59,7 +59,7 @@ const CommentScreen = (props: any) => {
                         placeholderTextColor={"#ECEBED"}
                     />
                     <TouchableOpacity onPress={commentPost}>
-                        <Send />
+                        <SvgSend />
                     </TouchableOpacity>
                 </View>
 

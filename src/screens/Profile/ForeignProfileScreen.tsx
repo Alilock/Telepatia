@@ -14,6 +14,7 @@ import SvgBack from '../../components/Icons/Back';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParams } from '../../navigations';
+import SvgMessage from '../../components/Icons/Message';
 const ForeignProfileScreen = (props: any) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
@@ -86,9 +87,14 @@ const ForeignProfileScreen = (props: any) => {
                                     <SvgBack stroke={"white"} width={35} />
                                 </TouchableOpacity>
                                 <View style={styles.aboutme}>
-                                    <Text style={styles.username}>@{user && user.username}</Text>
+                                    <View style={styles.usermessage}>
+                                        <Text style={styles.username}>@{user && user.username}</Text>
+                                        <TouchableOpacity style={styles.messagebtn}>
+                                            <SvgMessage width={20} height={20} />
+                                        </TouchableOpacity>
+                                    </View>
                                     <Text style={styles.located}>Baku 🇦🇿</Text>
-                                    <Text style={styles.bio}>Mobile Developer for Fun! 📲 </Text>
+                                    <Text style={styles.bio}>{user && user.bio}</Text>
                                 </View>
                                 <View style={styles.statistics}>
                                     <View style={styles.followings}>
@@ -161,6 +167,22 @@ const styles = StyleSheet.create({
     profileimagetext: {
         fontSize: 64,
         color: "#fff"
+    },
+    usermessage: {
+        flexDirection: "row",
+        textAlign: "center",
+        justifyContent: "center",
+    },
+    messagebtn: {
+        marginLeft: 16,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        borderColor: "#727477",
+        borderWidth: 1,
+        alignItems: "center",
+        justifyContent: "center"
+
     },
     aboutme: {
         marginTop: 91,

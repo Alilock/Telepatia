@@ -1,1 +1,1 @@
-export {default as Send} from './Send';
+export {default as Message} from './Message';
