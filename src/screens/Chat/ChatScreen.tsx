@@ -26,23 +26,25 @@ interface ChatMessage {
     user: User;
 }
 
-const socket = io('https://telepatiaapi.onrender.com');
+const socket = io('http://localhost:8080');
+// const socket = io('https://telepatiaapi.onrender.com');
 
-const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
+const ChatScreen = ({ route }: any) => {
+    const receiverId = route.params.receiverId
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: StoreType) => state.userSlice.foreignUser);
     const [status, userId, loading] = UserAuth();
-    const [receiverId, setReceiverId] = useState<string>('');
     const [messages, setMessages] = useState<IMessage[]>([]);
 
     useEffect(() => {
-        if (userId) {
-            setReceiverId(route.params.receiverId);
+        if (userId && receiverId) {
             dispatch(getForeignUser(receiverId));
+
             socket.on('connect', () => {
                 console.log('Connected to server');
             });
+            socket.emit('join', userId);
 
             socket.on('message', (chat: any) => {
                 const newMessage = chat.messages[chat.messages.length - 1];
@@ -60,28 +62,30 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
                 );
             });
 
-            socket.emit('join', userId);
 
             setIsLoading(true);
-            console.log(userId + receiverId);
 
             axios
-                .get(`https://telepatiaapi.onrender.com/api/chat/${userId}/${receiverId}`)
+                // .get(`https://telepatiaapi.onrender.com/api/chat/${userId}/${receiverId}`)
+                .get(`http://localhost:8080/api/chat/${userId}/${receiverId}`)
                 .then(response => {
                     const chat = response.data;
+                    if (chat) {
+                        const formattedMessages: IMessage[] = chat.messages.map((message: any) => ({
+                            _id: message._id,
+                            text: message.content,
+                            createdAt: message.createdAt,
+                            user: {
+                                _id: message.sender._id,
+                                name: message.sender.username,
+                                avatar: message.sender.profilePicture,
+                            },
+                        }));
+                        setMessages(formattedMessages.reverse());
 
-                    const formattedMessages: IMessage[] = chat.messages.map((message: any) => ({
-                        _id: message._id,
-                        text: message.content,
-                        createdAt: message.createdAt,
-                        user: {
-                            _id: message.sender._id,
-                            name: message.sender.username,
-                            avatar: message.sender.profilePicture,
-                        },
-                    }));
+                    }
 
-                    setMessages(formattedMessages.reverse());
+
                     setIsLoading(false);
                 })
                 .catch(error => {
@@ -90,7 +94,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
 
 
             return () => {
-                socket.emit('leave', route.params.userId);
+                socket.emit('leave', userId);
                 socket.disconnect();
             };
         }
@@ -115,7 +119,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ route }) => {
         const { user } = props.currentMessage;
         return <Avatar.Image size={40} source={{ uri: user.avatar }} />;
     };
-    console.log('loading', isLoading);
 
     return (
         <SafeAreaView style={styles.container}>

@@ -101,8 +101,7 @@ const userSlice = createSlice({
 
         builder.addCase(followUser.fulfilled, (state, action) => {
 
-            console.log("foreign", action.payload.foreignUser);
-            console.log("user", action.payload.user);
+
 
 
             state.foreignUser.followers = action.payload.foreignUser.followers

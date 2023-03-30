@@ -110,13 +110,10 @@ const postSlice = createSlice({
         })
 
         builder.addCase(likePost.pending, (state) => {
-            state.loading = 'pending'
         }).addCase(likePost.rejected, (state, action) => {
-            state.loading = 'reject',
-                state.error = action.payload
+            state.error = action.payload
         })
             .addCase(likePost.fulfilled, (state, action) => {
-                state.loading = 'fullfied';
                 const likedPost = action.payload.data;
                 const likedPostIndex = state.posts.findIndex((post: any) => post._id === likedPost._id);
                 if (likedPostIndex >= 0) {

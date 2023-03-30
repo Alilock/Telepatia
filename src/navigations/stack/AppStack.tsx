@@ -32,6 +32,7 @@ const AppStack = () => {
                     ),
                 }}
             />
+
             <Tab.Screen name='Search' component={SearchScreen}
                 options={{
                     tabBarIcon: ({ color, focused }) => (

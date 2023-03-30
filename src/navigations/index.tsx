@@ -8,6 +8,7 @@ import { ActivityIndicator } from 'react-native-paper'
 import CommentScreen from '../screens/Comment/CommentScreen'
 import ForeignProfileScreen from '../screens/Profile/ForeignProfileScreen'
 import ChatScreen from '../screens/Chat/ChatScreen'
+import MessagesScreen from '../screens/Chat/MessagesScreen'
 
 
 export type RootStackParams = {
@@ -15,7 +16,8 @@ export type RootStackParams = {
     AuthStack: any;
     AppStack: any;
     ForeignProfile: any;
-    ChatScreen: any
+    ChatScreen: any;
+    MessagesScreen: any;
 };
 const Stack = createNativeStackNavigator<RootStackParams>()
 const index = () => {
@@ -54,6 +56,7 @@ const index = () => {
                             }} />
                             <Stack.Screen name='ForeignProfile' component={ForeignProfileScreen} />
                             <Stack.Screen name='ChatScreen' component={ChatScreen} />
+                            <Stack.Screen name='MessagesScreen' component={MessagesScreen} />
                         </>
 
                 }
