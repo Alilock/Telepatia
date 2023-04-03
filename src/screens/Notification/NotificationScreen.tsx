@@ -31,7 +31,6 @@ const NotificationScreen = () => {
             navigation.navigate("Comment", postId)
         }
     };
-    console.log(loadingnot);
 
     const handleRefresh = () => {
         dispatch(fetchNotifications(userId));
