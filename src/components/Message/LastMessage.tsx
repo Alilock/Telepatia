@@ -8,11 +8,12 @@ import { RootStackParams } from '../../navigations'
 const LastMessage = ({ item }: any) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
 
-    const goToProfile = () => {
-        navigation.navigate('ForeignProfile', item._id)
+    const gotoChat = () => {
+        navigation.navigate("ChatScreen", { receiverId: item.user[0]._id })
     }
+    
     return (
-        <TouchableOpacity style={styles.content} onPress={goToProfile}>
+        <TouchableOpacity style={styles.content} onPress={gotoChat}>
             <View style={styles.container}>
                 <Avatar width={40} height={40} raduis={20} source={item.user[0].profilePicture} />
                 <View>

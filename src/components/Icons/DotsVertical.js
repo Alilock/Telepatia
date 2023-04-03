@@ -10,7 +10,7 @@ const SvgDotsVertical = props => (
     {...props}>
     <Path
       d="M12 5v.01V5Zm0 7v.01V12Zm0 7v.01V19Zm0-13a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"
-      stroke="#727477"
+      // stroke="#727477"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"

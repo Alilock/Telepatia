@@ -22,6 +22,7 @@ export type RootStackParams = {
 const Stack = createNativeStackNavigator<RootStackParams>()
 const index = () => {
 
+    
     const [status, userId, loading] = UserAuth()
 
     return (

@@ -31,7 +31,6 @@ const Login = ({ navigation }: any) => {
 
     }, [state.loading])
 
-
     return (
         <SafeAreaView style={{
             backgroundColor: "#1e1e1e",

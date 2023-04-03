@@ -10,6 +10,8 @@ import { getUserById, updatePicThunk } from '../../redux/slice/UserSlice';
 import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
 import ImagePickerModal from '../../components/ImagePickerModal';
 import Post from '../../components/Posts/Post';
+import SvgLogout from '../../components/Icons/Logout';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
     const [status, userId, loading] = UserAuth()
@@ -29,7 +31,9 @@ const ProfileScreen = () => {
         }
 
     }, [userId])
-
+    const logout = () => {
+        AsyncStorage.clear()
+    }
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
     const pickImage = () => {
         setIsModalVisible(true);
@@ -71,8 +75,13 @@ const ProfileScreen = () => {
                         renderItem={({ item, index }) => <Post item={item} index={index} />}
                         ListHeaderComponent={() => (
                             <View style={{ flex: 0.6 }}>
+
                                 <View style={styles.banner}>
+                                    <TouchableOpacity style={styles.logoutbtn} onPress={logout}>
+                                        <SvgLogout />
+                                    </TouchableOpacity>
                                     <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
+
                                     <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
                                         {
                                             user && user.profilePicture ?
@@ -84,11 +93,12 @@ const ProfileScreen = () => {
                                                 /> : <Text style={styles.profileimagetext}>{user.username && user.username[0] + user.username[1]}</Text>
                                         }
                                         {/* <TouchableOpacity style={styles.edit} onPress={pickimage}>
-                                    <SvgEditSvgrepoCom stroke={'#fff'} />
-                                </TouchableOpacity> */}
+                                            <SvgEditSvgrepoCom stroke={'#fff'} />
+                                        </TouchableOpacity> */}
                                         <TouchableOpacity style={styles.edit} onPress={pickImage}>
                                             <SvgEditSvgrepoCom stroke={'#fff'} />
                                         </TouchableOpacity>
+
                                         <ImagePickerModal visible={isModalVisible} onSelect={handleImageSelect} onClose={handleModalClose} />
                                     </LinearGradient>
 
@@ -131,7 +141,7 @@ const styles = StyleSheet.create({
     },
     bannerimage: {
         resizeMode: 'cover',
-        width: "100%"
+        width: "100%",
     },
     profile: {
         width: 150,
@@ -193,6 +203,18 @@ const styles = StyleSheet.create({
     follow: {
         color: '#727477',
         fontWeight: '500'
+    },
+    logoutbtn: {
+        backgroundColor: "#000",
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        position: "absolute",
+        alignItems: "center",
+        justifyContent: "center",
+        right: 20,
+        top: 40,
+        zIndex: 1
     },
     editButton: {
         paddingHorizontal: 32,

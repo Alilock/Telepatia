@@ -24,6 +24,8 @@ interface ConfirmEmail {
     email: string
 }
 
+
+
 export const registerThunk = createAsyncThunk("auth/register", async (payload: SignUp, { rejectWithValue }) => {
     try {
         const response = await axiosInstance.post('api/auth/register', payload)
@@ -73,7 +75,6 @@ const authSlice = createSlice({
                 state.userId = action.payload.userId;
                 state.token = action.payload.token;
                 state.error = ''
-
             })
             .addCase(confirmEmail.pending, (state) => {
                 state.loading = 'pending';

@@ -42,6 +42,7 @@ const HomeScreen = () => {
         dispatch(getAllFriendsPosts())
 
     }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             {

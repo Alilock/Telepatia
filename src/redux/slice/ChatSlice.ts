@@ -61,7 +61,7 @@ const chatSlice = createSlice({
     },
 });
 
-// export const { setMessages, addMessage, setLoading } = chatSlice.actions;
+export const { setMessages, addMessage, setLoading } = chatSlice.actions;
 
 // export const getChatMessages = (senderId: string, receiverId: string): AppThunk => async dispatch => {
 //     dispatch(setLoading(true));

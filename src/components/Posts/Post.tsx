@@ -66,7 +66,7 @@ const Post = ({ item }: any) => {
                     </View>
 
                 </TouchableOpacity>
-                <SvgDotsVertical />
+                <SvgDotsVertical stroke={"#727477"} />
             </View>
             <View style={styles.media}>
                 {
@@ -95,7 +95,7 @@ const Post = ({ item }: any) => {
                     </View>
                     <View style={styles.action}>
                         <TouchableOpacity onPress={goToComment}>
-                            <SvgComment />
+                            <SvgComment stroke={"#ECEBED"} />
 
                         </TouchableOpacity>
                         <Text style={styles.count}>{item && item.comments.length}</Text>
