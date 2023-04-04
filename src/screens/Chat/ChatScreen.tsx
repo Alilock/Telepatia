@@ -64,6 +64,8 @@ const ChatScreen = ({ route }: any) => {
                     user: {
                         _id: newMessage.sender._id,
                         name: newMessage.sender.username,
+                        avatar: newMessage.sender.profilePicture,
+
                     },
                 };
                 dispatch(addMessage(message))
@@ -82,6 +84,7 @@ const ChatScreen = ({ route }: any) => {
                 // .get(`http://localhost:8080/api/chat/${userId}/${receiverId}`)
                 .then(response => {
                     const chat = response.data;
+
                     if (chat) {
                         const formattedMessages: IMessage[] = chat.messages.map((message: any) => ({
                             _id: message._id,
@@ -183,7 +186,7 @@ const ChatScreen = ({ route }: any) => {
                         user={{ _id: userId }}
                         renderAvatar={renderAvatar}
                         renderBubble={renderBubble}
-                        bottomOffset={25}
+                        // bottomOffset={25}
                         renderSend={(props: any) => {
                             return <Send {...props}>
                                 <SvgSend width={20} height={28} />
