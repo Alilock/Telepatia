@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     desc: {
         marginTop: 10,
         color: "#B9C1BE",
-        opacity: 0.1,
+        opacity: 0.5,
         fontSize: 16
 
     },

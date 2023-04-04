@@ -10,11 +10,44 @@ import SvgClose from '../../components/Icons/Close';
 import UserAuth from '../../features/hooks/UserAuth';
 import { useSelector, useDispatch } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
+
 import { postPostThunk } from '../../redux/slice/PostSlice';
+import 'react-native-url-polyfill/auto';
+import { Configuration, OpenAIApi } from "openai";
+import AnimatedLottieView from 'lottie-react-native';
+
+
 const ShareScreen = ({ navigation }: any) => {
+    const configuration = new Configuration({
+        apiKey: "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",
+    });
+    const openai = new OpenAIApi(configuration);
+    const generateImage = async () => {
+        setLoading(true)
+        setImageUri('')
+
+        const response = await openai.createImage({
+            prompt: content,
+            n: 1,
+            size: "512x512",
+        }).then(res => {
+            setImageUri(res.data.data[0].url)
+            console.log(res.data.data[0])
+            console.log('timeoyt');
+
+            setTimeout(() => {
+                setLoading(false)
+
+            }, 2500)
+        }
+
+        )
+    };
+    const [loading, setLoading] = useState(false)
+
     const dispatch = useDispatch<AppDispatch>();
     const state = useSelector((state: StoreType) => state.postSlice)
-    const [status, userId, loading] = UserAuth()
+    const [status, userId, loadings] = UserAuth()
     const user = useSelector((state: StoreType) => state.userSlice.user)
     const [image, setImage] = useState<any>(null);
     const [content, setStatus] = useState<string>('')
@@ -22,24 +55,38 @@ const ShareScreen = ({ navigation }: any) => {
     const [open, isOpen] = useState<boolean>(false)
     const [imageUri, setImageUri] = useState<any>('');
 
-
-
+    const [isAi, setAi] = useState(false)
+    const [prompt, setPromt] = useState<string>('')
     const publishPost = () => {
-        const form = new FormData();
-        if (image) {
-            form.append("photos", {
-                name: image.fileName, // Whatever your filename is
-                uri: image.uri, //  file:///data/user/0/com.cookingrn/cache/rn_image_picker_lib_temp_5f6898ee-a8d4-48c9-b265-142efb11ec3f.jpg
-                type: image.type, // video/mp4 for videos..or image/png etc...
-            });
+
+        if (isAi) {
+            const form = new FormData();
+            form.append('photourl', imageUri)
+            form.append("userId", userId)
+
+            dispatch(postPostThunk(form))
+            navigation.navigate("Home")
+            setImageUri('')
+            setStatus('')
+
+        } else {
+            const form = new FormData();
+            if (image) {
+                form.append("photos", {
+                    name: image.fileName, // Whatever your filename is
+                    uri: image.uri, //  file:///data/user/0/com.cookingrn/cache/rn_image_picker_lib_temp_5f6898ee-a8d4-48c9-b265-142efb11ec3f.jpg
+                    type: image.type, // video/mp4 for videos..or image/png etc...
+                });
+            }
+
+            form.append("content", content)
+            form.append("userId", userId)
+
+            dispatch(postPostThunk(form))
+
+            navigation.navigate("Home")
         }
 
-        form.append("content", content)
-        form.append("userId", userId)
-
-        dispatch(postPostThunk(form))
-
-        navigation.navigate("Home")
     }
     //#region image
     const takeImage = () => launchCamera({
@@ -48,6 +95,18 @@ const ShareScreen = ({ navigation }: any) => {
     }, (res: ImagePickerResponse) => {
 
     })
+
+    const setStatusHandler = (value: string) => {
+        setStatus(value)
+
+        if (value[0] === '/') {
+            setAi(true)
+        }
+        else {
+            setAi(false)
+        }
+    }
+
 
 
     const pickImage = () => {
@@ -89,12 +148,28 @@ const ShareScreen = ({ navigation }: any) => {
                         </View>
                         <View style={styles.form} >
                             <Avatar source={user.profilePicture} name={user.username} />
-                            <TextInput multiline={true} numberOfLines={4}
-                                placeholder="What's on your mind?"
-                                placeholderTextColor={'#727477'}
-                                onChangeText={setStatus}
-                                style={{ color: "white", fontSize: 16 }}
-                            />
+                            {
+                                isAi ?
+                                    <View style={styles.ai}>
+                                        <Image source={require('../../assets/images/chip.png')} style={{ width: 32, height: 32 }} />
+                                        <TextInput multiline={true} numberOfLines={4}
+                                            placeholder="Ask AI for image"
+                                            placeholderTextColor={'red'}
+                                            value={content}
+                                            autoFocus
+                                            onChangeText={setStatusHandler}
+                                            style={{ color: "white", fontSize: 16, width: '77%' }}
+                                        />
+                                    </View> :
+                                    <TextInput multiline={true} numberOfLines={4}
+                                        placeholder="What's on your mind? Or use '/' for AI"
+                                        placeholderTextColor={'#727477'}
+                                        value={content}
+                                        autoFocus
+                                        onChangeText={setStatusHandler}
+                                        style={{ color: "white", fontSize: 16, width: '90%' }}
+                                    />
+                            }
                         </View>
                         <View style={styles.mediastyle}>
                             <TouchableOpacity onPress={startAnimation} style={styles.openmedia}>
@@ -102,7 +177,12 @@ const ShareScreen = ({ navigation }: any) => {
                                     !open ?
                                         <SvgPlus width={16} height={16} stroke={'#fff'} /> : <SvgClose width={16} height={16} stroke={'#fff'} />
                                 }
+
                             </TouchableOpacity>
+                            {
+                                isAi ?
+                                    <Button title='ask AI' onPress={generateImage} /> : null
+                            }
                             <Animated.View style={[{ display: open ? "flex" : 'none', opacity: animation, flexDirection: "row", }, ...[styles.media]]}>
                                 <TouchableOpacity onPress={pickImage}>
                                     <SvgImage width={20} height={20} />
@@ -113,6 +193,15 @@ const ShareScreen = ({ navigation }: any) => {
                             </Animated.View>
                         </View>
                         <View style={styles.imagewrap}>
+                            {
+                                loading ?
+                                    <AnimatedLottieView
+                                        autoPlay
+                                        loop
+                                        style={{ width: '100%' }}
+                                        source={require('../../assets/animation/ailoading.json')}
+                                    /> : null
+                            }
                             {imageUri && <Image source={{ uri: imageUri }} style={styles.pickedimage} />}
 
                         </View>
@@ -127,7 +216,11 @@ const ShareScreen = ({ navigation }: any) => {
 export default ShareScreen
 
 const styles = StyleSheet.create({
-
+    ai: {
+        flexDirection: "row",
+        gap: 8,
+        width: '100%'
+    },
     title: {
         color: "#ECEBED",
         fontWeight: "700",

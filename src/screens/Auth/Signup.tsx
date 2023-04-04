@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextStyle, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View, TextStyle, ActivityIndicator, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-paper'
@@ -34,6 +34,7 @@ const Signup = ({ navigation }: any) => {
 
 
     return (
+
         <SafeAreaView style={{
             backgroundColor: "#1e1e1e",
             flex: 1
@@ -110,6 +111,7 @@ const Signup = ({ navigation }: any) => {
             }
 
         </SafeAreaView>
+
     )
 }
 
