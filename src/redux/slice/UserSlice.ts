@@ -25,6 +25,15 @@ export const updatePicThunk = createAsyncThunk("update/users", async (payload: a
         rejectWithValue(error)
     }
 })
+export const updateBioThunk = createAsyncThunk("updatebio/users", async (payload: any) => {
+    try {
+        const response = await axiosInstance.put('api/users/updateBio', payload)
+
+        return response.data
+    } catch (error) {
+
+    }
+})
 
 export const getUserById = createAsyncThunk('get/users', async (payload: any, { rejectWithValue }) => {
     try {
@@ -98,12 +107,11 @@ const userSlice = createSlice({
                 state.user.profilePicture = action.payload.user.profilePicture
                 state.user._ud = action.payload.user._id
             })
+        builder.addCase(updateBioThunk.fulfilled, (state, action) => {
+            state.user.bio = action.payload.bio
 
+        })
         builder.addCase(followUser.fulfilled, (state, action) => {
-
-
-
-
             state.foreignUser.followers = action.payload.foreignUser.followers
             state.user.following = action.payload.user.following
         })

@@ -28,7 +28,7 @@ const UserAuth = () => {
 
     }, [])
 
-    return [status, userId, loading];
+    return [status, userId, loading, setStatus];
 
 }
 

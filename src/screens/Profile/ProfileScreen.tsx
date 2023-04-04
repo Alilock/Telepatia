@@ -1,38 +1,45 @@
-import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import UserAuth from '../../features/hooks/UserAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { StoreType, AppDispatch } from '../../redux';
+import RNRestart from 'react-native-restart';
 import { getAllFriendsPosts, postGetAllUser } from '../../redux/slice/PostSlice';
-import { getUserById, updatePicThunk } from '../../redux/slice/UserSlice';
+import { getUserById, updateBioThunk, updatePicThunk } from '../../redux/slice/UserSlice';
 import SvgEditSvgrepoCom from '../../components/Icons/EditSvgrepoCom';
 import ImagePickerModal from '../../components/ImagePickerModal';
 import Post from '../../components/Posts/Post';
 import SvgLogout from '../../components/Icons/Logout';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParams } from '../../navigations';
 const Tab = createMaterialTopTabNavigator();
 const ProfileScreen = () => {
-    const [status, userId, loading] = UserAuth()
+
+
+    // const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
+    const [isEditingBio, setIsEditingBio] = useState(false);
+    const [newBio, setNewBio] = useState('');
+    const [status, userId, loading, setStatus] = UserAuth()
     const dispatch = useDispatch<AppDispatch>()
     const state = useSelector((state: StoreType) => state.postSlice)
     const user = useSelector((state: StoreType) => state.userSlice.user)
     const loadinguser = useSelector((state: StoreType) => state.userSlice.loading)
-    const handleRefresh = () => {
-        dispatch(getUserById(userId))
-        dispatch(getAllFriendsPosts())
-    }
+
 
     useEffect(() => {
+
         if (userId) {
-            dispatch(getUserById(userId))
-            dispatch(getAllFriendsPosts())
+
         }
 
     }, [userId])
     const logout = () => {
         AsyncStorage.clear()
+        RNRestart.Restart()
     }
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
     const pickImage = () => {
@@ -44,6 +51,21 @@ const ProfileScreen = () => {
     };
     const handleModalClose = () => {
         setIsModalVisible(false);
+    };
+
+    const handleEditBioPress = () => {
+        setIsEditingBio(true);
+        setNewBio(user.bio);
+    };
+    const handleSaveBioPress = () => {
+        const payload = {
+            bio: newBio,
+            userId: user._id
+        }
+        dispatch(updateBioThunk(payload))
+
+        // TODO: Update user's bio in the database.
+        setIsEditingBio(false);
     };
     const updatePic = (image: any) => {
 
@@ -61,74 +83,99 @@ const ProfileScreen = () => {
         dispatch(updatePicThunk(form))
     }
     return (
-        loadinguser == 'pending' ? <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <ActivityIndicator />
-        </View> :
-            <View>
+        <View style={{ flex: 0.6 }}>
 
+            <View style={styles.banner}>
+                <TouchableOpacity style={styles.logoutbtn} onPress={logout}>
+                    <SvgLogout />
+                </TouchableOpacity>
+                <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
+
+                <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
+                    {
+                        user && user.profilePicture ?
+                            <Image style={styles.profileimage}
+                                source={{
+                                    uri: user.profilePicture
+
+                                }}
+                            /> : <Text style={styles.profileimagetext}>{user.username && user.username[0] + user.username[1]}</Text>
+                    }
+                    {/* <TouchableOpacity style={styles.edit} onPress={pickimage}>
+                    <SvgEditSvgrepoCom stroke={'#fff'} />
+                </TouchableOpacity> */}
+                    <TouchableOpacity style={styles.edit} onPress={pickImage}>
+                        <SvgEditSvgrepoCom stroke={'#fff'} />
+                    </TouchableOpacity>
+
+                    <ImagePickerModal visible={isModalVisible} onSelect={handleImageSelect} onClose={handleModalClose} />
+                </LinearGradient>
+
+            </View>
+            <View style={styles.aboutme}>
+                <Text style={styles.username}>@{user && user.username}</Text>
+                <Text style={styles.located}>Baku 🇦🇿</Text>
                 {
-                    state.friendsPosts && <FlatList
-                        onRefresh={handleRefresh}
-                        refreshing={false}
-                        data={state.friendsPosts.filter((e: any) => e.author._id === userId)}
-                        keyExtractor={item => item._id}
-                        renderItem={({ item, index }) => <Post item={item} index={index} />}
-                        ListHeaderComponent={() => (
-                            <View style={{ flex: 0.6 }}>
-
-                                <View style={styles.banner}>
-                                    <TouchableOpacity style={styles.logoutbtn} onPress={logout}>
-                                        <SvgLogout />
-                                    </TouchableOpacity>
-                                    <Image style={styles.bannerimage} source={require('../../assets/images/banner.png')} />
-
-                                    <LinearGradient colors={['#f62e8e', '#ac1af0']} style={styles.profile}>
-                                        {
-                                            user && user.profilePicture ?
-                                                <Image style={styles.profileimage}
-                                                    source={{
-                                                        uri: user.profilePicture
-
-                                                    }}
-                                                /> : <Text style={styles.profileimagetext}>{user.username && user.username[0] + user.username[1]}</Text>
-                                        }
-                                        {/* <TouchableOpacity style={styles.edit} onPress={pickimage}>
-                                            <SvgEditSvgrepoCom stroke={'#fff'} />
-                                        </TouchableOpacity> */}
-                                        <TouchableOpacity style={styles.edit} onPress={pickImage}>
-                                            <SvgEditSvgrepoCom stroke={'#fff'} />
-                                        </TouchableOpacity>
-
-                                        <ImagePickerModal visible={isModalVisible} onSelect={handleImageSelect} onClose={handleModalClose} />
-                                    </LinearGradient>
-
-                                </View>
-                                <View style={styles.aboutme}>
-                                    <Text style={styles.username}>@{user && user.username}</Text>
-                                    <Text style={styles.located}>Baku 🇦🇿</Text>
-                                    <Text style={styles.bio}>{user && user.bio} </Text>
-                                </View>
-                                <View style={styles.statistics}>
-                                    <View style={styles.followings}>
-                                        <Text style={styles.count}>{user && user.followers && user.followers.length}</Text>
-                                        <Text style={styles.follow}>Followers</Text>
-                                    </View>
-                                    <View style={styles.followings}>
-                                        <Text style={styles.count}>{user && user.followers && user.following.length}</Text>
-                                        <Text style={styles.follow}>Following</Text>
-
-                                    </View>
-                                    <TouchableOpacity style={styles.editButton}>
-                                        <Text style={styles.edittext}>Edit Profile</Text>
-                                    </TouchableOpacity>
-
-                                </View>
-                            </View>
-                        )}
-
-                    />
+                    isEditingBio ? (
+                        <View style={styles.editing}>
+                            <TextInput
+                                style={styles.bioInput}
+                                value={newBio}
+                                onChangeText={(text) => setNewBio(text)}
+                            />
+                            <TouchableOpacity onPress={handleSaveBioPress}>
+                                <Text style={styles.saveButton}>Save</Text>
+                            </TouchableOpacity>
+                        </View>) : (
+                        <TouchableOpacity onPress={handleEditBioPress}>
+                            <Text style={styles.bio}>{user.bio}</Text>
+                        </TouchableOpacity>
+                    )
                 }
-            </View >
+
+
+
+            </View>
+            <View style={styles.statistics}>
+                <View style={styles.followings}>
+                    <Text style={styles.count}>{user && user.followers && user.followers.length}</Text>
+                    <Text style={styles.follow}>Followers</Text>
+                </View>
+                <View style={styles.followings}>
+                    <Text style={styles.count}>{user && user.followers && user.following.length}</Text>
+                    <Text style={styles.follow}>Following</Text>
+
+                </View>
+                <TouchableOpacity style={styles.editButton} onPress={handleEditBioPress}>
+                    <Text style={styles.edittext}>Edit Profile</Text>
+                </TouchableOpacity>
+
+            </View>
+
+            {
+
+                <View>
+
+                    {
+                        state.friendsPosts && <FlatList
+                            data={state.friendsPosts.filter((e: any) => e.author._id === userId)}
+                            keyExtractor={item => item._id}
+                            contentContainerStyle={{
+                                paddingBottom: 100,
+                                // paddingTop: 20
+                            }}
+                            renderItem={({ item, index }) => <Post item={item} index={index} />}
+
+                        />
+                    }
+                </View >
+            }
+
+        </View>
+
+
+
+
     )
 }
 
@@ -186,7 +233,7 @@ const styles = StyleSheet.create({
         marginTop: 8
     },
     statistics: {
-        marginTop: 24,
+        marginVertical: 24,
         marginHorizontal: 24,
         flexDirection: 'row',
         justifyContent: 'space-between'
@@ -234,5 +281,25 @@ const styles = StyleSheet.create({
         zIndex: 1,
         right: 25,
         bottom: 10
-    }
+    },
+    editing: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8
+    },
+    bioInput: {
+        backgroundColor: '#323436',
+        color: "white",
+        fontWeight: "500",
+        textAlign: "center",
+        alignItems: "center",
+        borderRadius: 20,
+        padding: 8,
+        justifyContent: "center"
+    },
+    saveButton: {
+        color: '#F62E8E',
+        marginTop: 8,
+    },
 })

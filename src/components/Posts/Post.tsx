@@ -39,7 +39,6 @@ const Post = ({ item }: any) => {
             userId: userId,
             postId: item._id
         }
-        console.log('pa', payload);
 
         dispatch(likePost(payload))
     }
