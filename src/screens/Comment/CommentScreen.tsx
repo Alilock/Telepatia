@@ -10,11 +10,9 @@ import Avatar from '../../components/Avatar';
 import Comment from '../../components/Posts/Comment';
 import UserAuth from '../../features/hooks/UserAuth';
 import SvgSend from '../../components/Icons/Send';
-import { UIManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 const CommentScreen = (props: any) => {
     const [status, userId, loading] = UserAuth()
-    UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
     const id = props.route.params
     const dispatch = useDispatch<AppDispatch>()
@@ -39,11 +37,11 @@ const CommentScreen = (props: any) => {
             <ActivityIndicator />
             :
             state.post &&
-            // <View
-            //     onLayout={Animated.LayoutAnimation.configureNext(Animated.LayoutAnimation.Presets.easeInEaseOut)}
-            // >
+
             <KeyboardAvoidingView
-                style={{ flex: 1, justifyContent: "space-between" }}
+                style={{ flex: 1 }}
+                behavior={'padding'}
+                keyboardVerticalOffset={70}
             >
 
                 <View style={{ flex: 0.95, }}>
@@ -73,8 +71,6 @@ const CommentScreen = (props: any) => {
                 </View>
 
             </KeyboardAvoidingView>
-        // </View>
-
 
     )
 }

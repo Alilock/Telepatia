@@ -12,36 +12,45 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParams } from '../../navigations'
 import UserAuth from '../../features/hooks/UserAuth'
+import { getUserById } from '../../redux/slice/UserSlice'
 
 
 
 const HomeScreen = () => {
 
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
+    const [status, userId, loadings] = UserAuth()
 
+    const gotoMessages = () => {
+        navigation.navigate("MessagesScreen",)
+    }
+
+
+    const dispatch = useDispatch<AppDispatch>()
+    const loading = useSelector((state: StoreType) => state.postSlice.loading)
+    const friendsPosts = useSelector((state: StoreType) => state.postSlice.friendsPosts)
+    const user = useSelector((state: StoreType) => state.userSlice)
+    console.log(user);
+
+    useEffect(() => {
+        if (userId) {
+            dispatch(getAllFriendsPosts())
+            dispatch(getUserById(userId))
+        }
+
+    }, [userId])
+    const handleRefresh = () => {
+        dispatch(getAllFriendsPosts())
+
+    }
     const headerComp = () => (
         <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Hello Ali !</Text>
+            <Text style={styles.headerText}>Hello {user && user.user.username} !</Text>
             <TouchableOpacity onPress={gotoMessages} >
                 <SvgMessage />
             </TouchableOpacity>
         </View>
     )
-    const gotoMessages = () => {
-        navigation.navigate("MessagesScreen",)
-    }
-
-    const dispatch = useDispatch<AppDispatch>()
-    const loading = useSelector((state: StoreType) => state.postSlice.loading)
-    const friendsPosts = useSelector((state: StoreType) => state.postSlice.friendsPosts)
-    useEffect(() => {
-        dispatch(getAllFriendsPosts())
-
-    }, [])
-    const handleRefresh = () => {
-        dispatch(getAllFriendsPosts())
-
-    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>

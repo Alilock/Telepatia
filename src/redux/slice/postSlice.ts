@@ -35,8 +35,10 @@ export const postPostThunk = createAsyncThunk("post/post", async (payload: any, 
 })
 
 export const getAllFriendsPosts = createAsyncThunk('post/getAllFriendsPost', async () => {
+
     try {
         const response = await axiosInstance.get('api/posts/getAll')
+
         return response.data.data
     } catch (error: any) {
         // rejectWithValue(error.response.data.message)

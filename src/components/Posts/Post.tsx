@@ -75,9 +75,9 @@ const Post = ({ item }: any) => {
                 }
                 {
 
-                    item.photos.length > 0 ?
+                    item.photos ?
                         <Image style={styles.image} source={{
-                            uri: item.photos[0]
+                            uri: item.photos
 
                         }} /> : null
                 }
@@ -96,7 +96,7 @@ const Post = ({ item }: any) => {
                     <View style={styles.action}>
                         <TouchableOpacity onPress={goToComment}>
                             <SvgComment stroke={"#ECEBED"} />
-                            
+
                         </TouchableOpacity>
                         <Text style={styles.count}>{item && item.comments.length}</Text>
                     </View>
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 180,
+        height: 300,
         resizeMode: "cover",
         borderRadius: 16,
     },

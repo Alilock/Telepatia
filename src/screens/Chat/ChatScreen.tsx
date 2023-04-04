@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import { Bubble, GiftedChat, IMessage, User } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, Send, User } from 'react-native-gifted-chat';
 import io from 'socket.io-client';
 import UserAuth from '../../features/hooks/UserAuth';
 import axios from 'axios';
@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParams } from '../../navigations';
 import SvgBack from '../../components/Icons/Back';
 import SvgDotsVertical from '../../components/Icons/DotsVertical';
+import SvgSend from '../../components/Icons/Send';
 
 interface ChatScreenProps {
     route: {
@@ -182,26 +183,31 @@ const ChatScreen = ({ route }: any) => {
                         user={{ _id: userId }}
                         renderAvatar={renderAvatar}
                         renderBubble={renderBubble}
-                        textInputProps={{
-                            style: {
-                                alignItems: "center",
-                                backgroundColor: '#323436',
-                                borderRadius: 20,
-                                paddingVertical: 10,
-                                paddingHorizontal: 16,
-                                width: "100%",
-                                height: 40
-                            },
-
-                            placeholderStyle: {
-                                fontSize: 29,
-                            },
-                            placeholder: 'Type a message...',
-                            placeholderTextColor: '#ECEBED',
-                            returnKeyType: 'send',
+                        bottomOffset={60}
+                        renderSend={(props: any) => {
+                            return <Send {...props} containerStyle={{ zIndex: 9 }}>
+                                <SvgSend />
+                            </Send>
                         }}
+                        textInputProps={
+                            {
+                                style: {
+                                    alignItems: "center",
+                                    backgroundColor: '#323436',
+                                    borderRadius: 20,
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 16,
+                                    width: "100%",
+                                    height: 40
+                                },
 
-
+                                placeholderStyle: {
+                                    fontSize: 29,
+                                },
+                                placeholder: 'Type a message...',
+                                placeholderTextColor: '#ECEBED',
+                                returnKeyType: 'send',
+                            }}
 
                     />
                 </>
