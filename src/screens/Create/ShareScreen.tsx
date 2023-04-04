@@ -19,7 +19,7 @@ import AnimatedLottieView from 'lottie-react-native';
 
 const ShareScreen = ({ navigation }: any) => {
     const configuration = new Configuration({
-        apiKey: "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",
+        apiKey: "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",
     });
     const openai = new OpenAIApi(configuration);
     const generateImage = async () => {

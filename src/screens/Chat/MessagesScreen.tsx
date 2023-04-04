@@ -46,12 +46,18 @@ const MessagesScreen = () => {
     }
     const renderHeader: React.FC = () => {
         return (
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.backbtn} onPress={gotoBack}>
-                    <SvgBack stroke={"#fff"} />
-                </TouchableOpacity>
-                <Text style={styles.headText}>MESSAGES</Text>
-            </View>
+            <>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backbtn} onPress={gotoBack}>
+                        <SvgBack stroke={"#fff"} />
+                    </TouchableOpacity>
+                    <Text style={styles.headText}>MESSAGES</Text>
+
+                </View>
+                <LastMessage chatbot={true} />
+
+            </>
+
         )
     }
     return (
@@ -61,14 +67,19 @@ const MessagesScreen = () => {
                     <ActivityIndicator />
                 </View>
             ) : (
-                <FlatList
-                    data={chats}
-                    ListHeaderComponent={renderHeader}
-                    keyExtractor={(item, index) => item._id}
-                    renderItem={({ item, index }) => (
-                        <LastMessage item={item} />
-                    )}
-                />
+                <View>
+
+                    <FlatList
+                        data={chats}
+                        ListHeaderComponent={renderHeader}
+                        keyExtractor={(item, index) => item._id}
+                        renderItem={({ item, index }) => (
+                            <LastMessage item={item} />
+                        )}
+                    />
+
+                </View>
+
             )}
         </SafeAreaView>
     )

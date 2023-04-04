@@ -9,6 +9,7 @@ import CommentScreen from '../screens/Comment/CommentScreen'
 import ForeignProfileScreen from '../screens/Profile/ForeignProfileScreen'
 import ChatScreen from '../screens/Chat/ChatScreen'
 import MessagesScreen from '../screens/Chat/MessagesScreen'
+import AiChatScreen from '../screens/Chat/AiChatScreen'
 
 
 export type RootStackParams = {
@@ -18,13 +19,14 @@ export type RootStackParams = {
     ForeignProfile: any;
     ChatScreen: any;
     MessagesScreen: any;
+    AiChatScreen: any
 };
 const Stack = createNativeStackNavigator<RootStackParams>()
 const index = () => {
 
-    
+
     const [status, userId, loading] = UserAuth()
-    
+
 
     return (
 
@@ -47,6 +49,8 @@ const index = () => {
                             headerStyle: { backgroundColor: "#1c1c1c" },
                         }} />
                         <Stack.Screen name='ForeignProfile' component={ForeignProfileScreen} />
+                        <Stack.Screen name='MessagesScreen' component={MessagesScreen} />
+
                     </>
                         :
                         <>
@@ -59,6 +63,7 @@ const index = () => {
                             <Stack.Screen name='ForeignProfile' component={ForeignProfileScreen} />
                             <Stack.Screen name='ChatScreen' component={ChatScreen} />
                             <Stack.Screen name='MessagesScreen' component={MessagesScreen} />
+                            <Stack.Screen name='AiChatScreen' component={AiChatScreen} />
                         </>
 
                 }
