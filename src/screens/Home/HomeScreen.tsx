@@ -30,7 +30,6 @@ const HomeScreen = () => {
     const loading = useSelector((state: StoreType) => state.postSlice.loading)
     const friendsPosts = useSelector((state: StoreType) => state.postSlice.friendsPosts)
     const user = useSelector((state: StoreType) => state.userSlice)
-    console.log(user);
 
     useEffect(() => {
         if (userId) {

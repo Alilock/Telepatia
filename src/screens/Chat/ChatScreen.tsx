@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
-import { Bubble, GiftedChat, IMessage, Send, User } from 'react-native-gifted-chat';
+import { Bubble, GiftedChat, IMessage, InputToolbar, Send, User } from 'react-native-gifted-chat';
 import io from 'socket.io-client';
 import UserAuth from '../../features/hooks/UserAuth';
 import axios from 'axios';
@@ -33,7 +33,6 @@ interface ChatMessage {
     user: User;
 }
 
-// const socket = io('http://localhost:8080');
 
 const ChatScreen = ({ route }: any) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParams>>()
@@ -45,6 +44,7 @@ const ChatScreen = ({ route }: any) => {
     const [status, userId, loading] = UserAuth();
     const [messages, setMessages] = useState<IMessage[]>([]);
     const socket = io('https://telepatiaapi.onrender.com');
+    // const socket = io('http://localhost:8080');
 
     useEffect(() => {
         if (userId && receiverId) {
@@ -183,24 +183,17 @@ const ChatScreen = ({ route }: any) => {
                         user={{ _id: userId }}
                         renderAvatar={renderAvatar}
                         renderBubble={renderBubble}
-                        bottomOffset={60}
+                        bottomOffset={25}
                         renderSend={(props: any) => {
-                            return <Send {...props} containerStyle={{ zIndex: 9 }}>
-                                <SvgSend />
+                            return <Send {...props}>
+                                <SvgSend width={20} height={28} />
                             </Send>
                         }}
-                        textInputProps={
-                            {
-                                style: {
-                                    alignItems: "center",
-                                    backgroundColor: '#323436',
-                                    borderRadius: 20,
-                                    paddingVertical: 10,
-                                    paddingHorizontal: 16,
-                                    width: "100%",
-                                    height: 40
-                                },
 
+                        textInputProps={
+
+                            {
+                                color: "#fff",
                                 placeholderStyle: {
                                     fontSize: 29,
                                 },
@@ -208,6 +201,11 @@ const ChatScreen = ({ route }: any) => {
                                 placeholderTextColor: '#ECEBED',
                                 returnKeyType: 'send',
                             }}
+                        renderInputToolbar={(props: any) => {
+                            return (
+                                <InputToolbar {...props} containerStyle={styles.inputtool} />
+                            )
+                        }}
 
                     />
                 </>
@@ -220,6 +218,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#1c1c1c',
+    },
+    input: {
+        color: "#fff"
+    },
+    inputtool: {
+        borderRadius: 20,
+        height: 40,
+        color: "red",
+        backgroundColor: '#323436',
+        paddingHorizontal: 12,
+        marginHorizontal: 12,
+        gap: 8,
+        justifyContent: "center"
     },
     header: {
         flexDirection: "row",
